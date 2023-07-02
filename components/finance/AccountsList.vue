@@ -13,7 +13,7 @@ const financeStore = useFinanceStore()
     </p>
     <div class="flex gap-3">
       <template v-if="financeStore.accounts.isLoading">
-        <span class="loading loading-dots loading-lg mx-auto text-secondary"/>
+        <span class="loading loading-dots loading-lg mx-auto text-secondary" />
       </template>
       <template v-else-if="financeStore.accounts.data.length">
         <div
@@ -34,7 +34,9 @@ const financeStore = useFinanceStore()
       </template>
       <div v-else>
         <p>No tienes ninguna cuenta asociada</p>
-        <p class="mb-2">¡Crear una cuenta y comienza a mantener el orden en tus finanzas!</p>
+        <p class="mb-2">
+          ¡Crear una cuenta y comienza a mantener el orden en tus finanzas!
+        </p>
         <CreateAccount />
       </div>
     </div>

@@ -19,7 +19,7 @@ export const useFinanceStore = defineStore('financeStore', () => {
       const { id, ...rest } = account
       await setDoc(doc($db, `${userStore.user.email}/finance/accounts/${id}`), rest)
     } catch (err) {
-      console.error(err)
+      // console.error(err)
     }
   }
 
@@ -34,7 +34,7 @@ export const useFinanceStore = defineStore('financeStore', () => {
         accounts.data.push({ id: doc.id, amount, name })
       })
     } catch (err) {
-      console.error(err)
+      // console.error(err)
     } finally {
       accounts.isLoading = false
     }
