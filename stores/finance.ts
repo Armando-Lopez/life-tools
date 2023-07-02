@@ -1,49 +1,88 @@
 import { defineStore } from 'pinia'
-import { collection, doc, getDocs, setDoc } from 'firebase/firestore'
-import { Account } from '~/interfaces/finance'
+import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore'
+import { Pocket } from '~/interfaces/finance'
 import { useUserStore } from '~/stores/user'
+import { normalizeString } from '~/helpers/transforms'
 
 export const useFinanceStore = defineStore('financeStore', () => {
   const { $db } = useNuxtApp()
   const userStore = useUserStore()
-  const accounts = reactive({
-    isLoading: false,
-    data: <Account[]>[]
-  })
-  const totalBalance = computed<number>((): number =>
-    accounts.data.reduce((acc: number, account: Account) => account.amount + acc, 0)
-  )
 
-  async function crateAccount (account: Account): Promise<void> {
+  const pockets = reactive({
+    isLoading: false,
+    isCreating: false,
+    data: <Pocket[]>[]
+  })
+  const pocketToEdit = reactive({
+    isSaving: false,
+    data: <Pocket>{}
+  })
+  const showPocketModal = ref<Boolean>(false)
+  const totalBalance = computed<number>((): number =>
+    pockets.data.reduce((acc: number, pocket: Pocket) => pocket.amount + acc, 0)
+  )
+  watch(showPocketModal, (newValue: Boolean) => {
+    if (!newValue) {
+      pocketToEdit.isSaving = false
+      pocketToEdit.data = <Pocket>{}
+    }
+  })
+
+  async function cratePocket (pocket: Pocket): Promise<void> {
     try {
-      const { id, ...rest } = account
-      await setDoc(doc($db, `${userStore.user.email}/finance/accounts/${id}`), rest)
+      pockets.isCreating = true
+      const id = normalizeString(pocket.name, ['trim', 'toLowerCase', 'replaceAll| |_'])
+      const data = { name: pocket.name, amount: pocket.amount }
+      await setDoc(doc($db, `${userStore.user.email}/finance/pockets/${id}`), data)
     } catch (err) {
       // console.error(err)
+    } finally {
+      pockets.isCreating = false
     }
   }
 
-  async function getAccounts () {
+  async function deletePocket (path: string | null): Promise<boolean> {
     try {
-      accounts.isLoading = true
+      if (!path) {
+        return false
+      }
+      await deleteDoc(doc($db, path))
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
+  async function getPockets () {
+    try {
+      pockets.isLoading = true
       const { $db } = useNuxtApp()
-      const docs = await getDocs(collection($db, `${userStore.user.email}/finance/accounts`))
-      accounts.data = []
+      const docs = await getDocs(collection($db, `${userStore.user.email}/finance/pockets`))
+      pockets.data = []
       docs.forEach((doc) => {
         const { name, amount } = doc.data()
-        accounts.data.push({ id: doc.id, amount, name })
+        pockets.data.push({ id: doc.id, amount, name, path: doc.ref.path })
       })
     } catch (err) {
       // console.error(err)
     } finally {
-      accounts.isLoading = false
+      pockets.isLoading = false
     }
   }
 
+  function setPocketToEdit (pocket : Pocket) {
+    showPocketModal.value = true
+    pocketToEdit.data = pocket
+  }
+
   return {
-    accounts,
-    crateAccount,
-    getAccounts,
+    cratePocket,
+    deletePocket,
+    getPockets,
+    pockets,
+    pocketToEdit,
+    setPocketToEdit,
+    showPocketModal,
     totalBalance
   }
 })

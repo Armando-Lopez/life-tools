@@ -1,9 +1,6 @@
-export interface Account {
+export interface Pocket {
   amount: number
-  id: string | number
+  id?: string | number
   name: string
-}
-
-export interface Finance {
-  total_balance: number
+  path?: string
 }

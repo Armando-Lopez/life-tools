@@ -1,0 +1,45 @@
+<script setup lang="ts">
+import { Pocket } from '~/interfaces/finance'
+import { useFinanceStore } from '~/stores/finance'
+
+const financeStore = useFinanceStore()
+
+const props = defineProps<{ pocket: Pocket }>()
+
+async function deletePocket () {
+  const hasDeleted = await financeStore.deletePocket(props.pocket.path || null)
+  if (hasDeleted) {
+    await financeStore.getPockets()
+  }
+}
+</script>
+
+<template>
+  <div class="card relative w-full max-w-xs shadow">
+    <div class="dropdown dropdown-end absolute right-2 top-2">
+      <label tabindex="0" class="cursor-pointer">
+        <AppIcon icon="pepicons-pop:dots-y" width="25" />
+      </label>
+      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+        <li>
+          <button @click="financeStore.setPocketToEdit(props.pocket)">
+            Editar
+            <AppIcon icon="material-symbols:edit" class="text-info" />
+          </button>
+        </li>
+        <li>
+          <button @click="deletePocket()">
+            Eliminar
+            <AppIcon icon="material-symbols:delete" class="text-red-600" />
+          </button>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+      <p class="card-title">
+        {{ props.pocket.name }}
+      </p>
+      <p v-currency="props.pocket.amount" class="text-green-600 text-xl" />
+    </div>
+  </div>
+</template>
