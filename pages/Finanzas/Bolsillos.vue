@@ -7,7 +7,7 @@ definePageMeta({ middleware: 'auth' })
 const financeStore = useFinanceStore()
 
 onMounted(() => {
-  // financeStore.getPockets()
+  financeStore.getPockets()
 })
 </script>
 
