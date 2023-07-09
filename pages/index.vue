@@ -14,9 +14,9 @@ const userStore = useUserStore()
         Life tools provee un conjunto de herramientas para la vida contidiana
       </p>
       <template v-if="userStore.user.uid">
-        <ul class="p-2 divide-y border border-gray-400/50 rounded-md">
+        <ul class="p-2 space-y-4 border border-gray-400/50 rounded-md">
           <li v-for="workSpace in WORK_SPACES" :key="workSpace.id">
-            <NuxtLink :to="workSpace.urlPath" class="flex items-center gap-3 hover:underline">
+            <NuxtLink :to="{ name: workSpace.routeName }" class="flex items-center gap-3 hover:underline">
               <AppIcon :icon="workSpace.icon" width="30" />
               <p class="text-lg font-semibold">
                 {{ workSpace.name }}

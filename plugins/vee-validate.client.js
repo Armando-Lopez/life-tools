@@ -1,6 +1,6 @@
 import { configure, defineRule } from 'vee-validate'
 // eslint-disable-next-line camelcase
-import { required, numeric, min_value } from '@vee-validate/rules'
+import { required, numeric, min_value, max } from '@vee-validate/rules'
 
 const customMessages = {
   required: () => 'Requerido',
@@ -13,6 +13,7 @@ const customMessages = {
 }
 
 export default defineNuxtPlugin(() => {
+  defineRule('max', max)
   defineRule('min_value', min_value)
   defineRule('numeric', numeric)
   defineRule('required', required)

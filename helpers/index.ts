@@ -1,3 +1,5 @@
+export const generateId = (radix = 36): string => new Date().getTime().toString(radix)
+
 export const normalizeString = (string: string, functions: Array<string> = []): string => {
   let result = string.normalize('NFD').replace(/[\u0300-\u036F]/g, '')
   functions.forEach((functionToApply) => {

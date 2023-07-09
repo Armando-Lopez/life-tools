@@ -1,98 +1,66 @@
 <script setup lang="ts">
-import { useForm } from 'vee-validate'
 import { useFinanceStore } from '~/stores/finance'
 
 const financeStore = useFinanceStore()
-
 const isEditing = ref(false)
-
-const { defineInputBinds, errors, handleSubmit, setValues, resetForm } = useForm({
-  validationSchema: {
-    pocketAmount: 'required|numeric|min_value:100,$100',
-    pocketName: 'required'
-  }
+const formRef = ref(null)
+const model = ref({
+  name: 'holas',
+  amount: 0
 })
-const pocketAmount = defineInputBinds('pocketAmount')
-const pocketName = defineInputBinds('pocketName')
 
-const savePocket = handleSubmit(async (values) => {
-  const pocketData = {
-    name: values.pocketName,
-    amount: values.pocketAmount
-  }
+async function savePocket () {
   if (isEditing.value) {
-    const hasDeleted = await financeStore.deletePocket(financeStore.pocketToEdit.data.path || null)
-    if (hasDeleted) {
-      await financeStore.cratePocket(pocketData)
-    }
+    await financeStore.updatePocket(financeStore.pocketToEdit.data.path, model.value)
   } else {
-    await financeStore.cratePocket(pocketData)
+    await financeStore.cratePocket(model.value)
   }
   financeStore.showPocketModal = false
   await financeStore.getPockets()
-})
+}
 
 watch(financeStore.pocketToEdit, (newValue) => {
   isEditing.value = !!newValue.data.id
   if (isEditing.value) {
-    setValues({
-      pocketName: newValue.data.name,
-      pocketAmount: newValue.data.amount
+    formRef.value.setValues({
+      name: newValue.data.name,
+      amount: newValue.data.amount
     })
   } else {
-    resetForm()
+    formRef.value.resetForm()
   }
 })
 </script>
 
 <template>
   <AppModal v-model="financeStore.showPocketModal">
-    <form autocomplete="off" @submit.prevent="savePocket">
+    <AppForm
+      ref="formRef"
+      v-model="model"
+      autocomplete="off"
+      :is-loading="financeStore.pockets.isCreating || financeStore.pocketToEdit.isSaving"
+      @success="savePocket"
+    >
       <p class="mb-5 font-semibold text-center text-2xl">
         {{ financeStore.pocketToEdit.data.id ? "Editar" : "Agregar" }} bolsillo
       </p>
-      <div>
-        <label for="pocket-name" class="label">
-          <span class="label-text">¿Dónde se encuentra el dinero?</span>
-        </label>
-        <input
-          id="pocket-name"
-          v-bind="pocketName"
-          name="pocketName"
-          type="text"
-          placeholder="Banco/Ahorros/Efectivo"
-          class="input input-bordered input-primary w-full"
-          :class="{ 'input-error': !!errors.pocketName }"
-        >
-        <label for="pocket-name" class="label">
-          <span class="label-text-alt text-error">{{ errors.pocketName }}</span>
-        </label>
-      </div>
-      <div>
-        <label for="pocket-amount" class="label">
-          <span class="label-text">¿Cuánto dinero tienes en el bolsillo?</span>
-        </label>
-        <input
-          id="pocket-amount"
-          v-bind="pocketAmount"
-          name="pocketAmount"
-          type="number"
-          placeholder="$ 1.000.000"
-          class="input input-bordered input-primary w-full"
-          :class="{ 'input-error': !!errors.pocketAmount }"
-        >
-        <strong v-currency="pocketAmount.value" />
-        <label for="pocket-amount" class="label">
-          <span class="label-text-alt text-error">{{ errors.pocketAmount }}</span>
-        </label>
-      </div>
-      <button
-        :disabled="financeStore.pockets.isCreating || financeStore.pocketToEdit.isSaving"
-        class="btn btn-block btn-success mt-4"
-      >
-        <AppLoader v-if="financeStore.pockets.isCreating || financeStore.pocketToEdit.isSaving" />
-        <span v-else>{{ financeStore.pocketToEdit.data.id ? 'Editar' : 'Crear' }}</span>
+      <AppTextField
+        label="¿Dónde se encuentra el dinero?"
+        name="name"
+        placeholder="Banco/Ahorros/Efectivo"
+        rules="required"
+        type="text"
+      />
+      <AppTextField
+        label="¿Cuánto dinero tienes en el bolsillo?"
+        name="amount"
+        placeholder="$100.000.000"
+        rules="required|numeric|min_value:100,$100"
+        type="number"
+      />
+      <button class="btn btn-block btn-success mt-4">
+        <span>Guardar</span>
       </button>
-    </form>
+    </AppForm>
   </AppModal>
 </template>

@@ -3,7 +3,7 @@
  * @param callback Se ejecuta cada microsegundo, cada vez que el navegador esta listo para seguir el siguiente frame. Callback recibe el progreso de 0 a 1
  * @param duration Duration de la animación en microsegundos
  */
-export const animationFrame = (callback: Function, duration = 1000): void => {
+export const animationFrame = (callback: Function, duration = 500): void => {
   let startTimestamp: number
   function step (timestamp: number): void {
     if (!startTimestamp) { startTimestamp = timestamp }

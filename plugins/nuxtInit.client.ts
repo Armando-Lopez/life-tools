@@ -1,6 +1,9 @@
+import dayjs from 'dayjs'
+import 'dayjs/locale/es'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useUserStore } from '~/stores/user'
 import { User } from '~/interfaces'
+
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook('app:created', () => {
     document.documentElement.setAttribute('data-theme', 'light')
@@ -16,4 +19,5 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     })
   })
+  dayjs.locale('es')
 })

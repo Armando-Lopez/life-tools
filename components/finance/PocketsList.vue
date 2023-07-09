@@ -4,10 +4,15 @@ import PocketInfo from '~/components/finance/PocketInfo.vue'
 
 const financeStore = useFinanceStore()
 
+onMounted(() => {
+  if (!financeStore.pockets.data.length) {
+    financeStore.getPockets()
+  }
+})
 </script>
 
 <template>
-  <article>
+  <section class="px-4">
     <div class="flex items-center gap-5 mb-4">
       <p class="text-2xl font-semibold">
         Bolsillos
@@ -25,10 +30,10 @@ const financeStore = useFinanceStore()
       />
     </div>
     <div v-else>
-      <p>¡UPS! Tus pantalones estás vacíos</p>
+      <p>¡UPS! Tus pantalones están vacíos</p>
       <p class="mb-2">
         Usa el botón para crear un bosillo y comienza el seguimiento de tus finanzas
       </p>
     </div>
-  </article>
+  </section>
 </template>

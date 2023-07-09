@@ -12,6 +12,8 @@ export const useUserStore = defineStore('userStore', () => {
     photoURL: null
   })
 
+  const authTokenAccess = ref({})
+
   function setUser (currentUser: User | null) {
     user.uid = currentUser?.uid || null
     user.email = currentUser?.email || null
@@ -20,9 +22,32 @@ export const useUserStore = defineStore('userStore', () => {
     hasLoadedAuth.value = true
   }
 
+  async function initGoogleApi () {
+    const config = useRuntimeConfig().public
+    const CLIENT_ID = config.GOOGLE_API_CLIENT_ID
+    const API_KEY = config.FIREBASE_API_KEY
+    const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'
+    const SCOPES = 'https://www.googleapis.com/auth/calendar'
+    // @ts-ignore
+    await window.gapi.load('client', async () => {
+      // @ts-ignore
+      await window.gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: [DISCOVERY_DOC]
+      })
+      // @ts-ignore
+      authTokenAccess.value = window.google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: '' // defined later
+      })
+    })
+  }
+
   function signIn () {
     const { $auth } = useNuxtApp()
     const provider = new GoogleAuthProvider()
+    // provider.addScope('https://www.googleapis.com/auth/calendar')
     signInWithPopup($auth, provider)
     // .then((result) => {
     //   // setUser(<User>result.user)
@@ -43,9 +68,11 @@ export const useUserStore = defineStore('userStore', () => {
   }
 
   return {
+    authTokenAccess,
     hasLoadedAuth,
-    signIn,
+    initGoogleApi,
     setUser,
+    signIn,
     user
   }
 })
