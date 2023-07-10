@@ -7,8 +7,6 @@ const userStore = useUserStore()
 <template>
   <div v-if="userStore.hasLoadedAuth" class="min-h-screen flex flex-col">
     <TheHeader />
-    <main class="flex-grow container mx-auto">
-      <slot />
-    </main>
+    <slot />
   </div>
 </template>

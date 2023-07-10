@@ -68,7 +68,6 @@ export const useFinanceStore = defineStore('financeStore', () => {
   async function getPockets () {
     try {
       pockets.isLoading = true
-      const { $db } = useNuxtApp()
       const docs = await getDocs(collection($db, `${userStore.user.email}/finance/pockets`))
       pockets.data = []
       docs.forEach((doc) => {

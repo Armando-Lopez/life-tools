@@ -19,7 +19,6 @@ const financeStore = useFinanceStore()
       </div>
     </div>
   </section>
-
   <div class="divider" />
   <PocketsList />
   <CreateEditPocket />

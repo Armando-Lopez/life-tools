@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
+import duration from 'dayjs/plugin/duration'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useUserStore } from '~/stores/user'
 import { User } from '~/interfaces'
@@ -19,5 +20,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     })
   })
+  dayjs.extend(duration)
   dayjs.locale('es')
 })

@@ -15,7 +15,7 @@ async function deletePocket () {
 </script>
 
 <template>
-  <div class="card relative w-full max-w-xs shadow">
+  <div class="card relative w-full max-w-xs shadow-md">
     <div class="dropdown dropdown-end absolute right-2 top-2">
       <label tabindex="0" class="cursor-pointer">
         <AppIcon icon="pepicons-pop:dots-y" width="25" />

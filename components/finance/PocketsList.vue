@@ -17,9 +17,6 @@ onMounted(() => {
       <p class="text-2xl font-semibold">
         Bolsillos
       </p>
-      <button class="btn btn-success btn-circle btn-sm" @click="financeStore.showPocketModal = true">
-        <AppIcon icon="ic:round-plus" width="30px" />
-      </button>
     </div>
     <AppLoader v-if="financeStore.pockets.isLoading" />
     <div v-else-if="financeStore.pockets.data.length" class="flex flex-wrap gap-5">

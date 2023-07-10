@@ -2,9 +2,11 @@
 </script>
 
 <template>
-  <div class="pb-16">
-    <NuxtPage />
-  </div>
+  <main class="flex-grow flex flex-col container mx-auto pb-16">
+    <div class="flex-grow relative">
+      <NuxtPage />
+    </div>
+  </main>
   <nav class="fixed bottom-0 container mx-auto w-full finance-nav">
     <ul class="menu menu-horizontal rounded-t-box overflow-hidden grid grid-cols-3 w-full p-0 bg-base-200 shadow-inner">
       <li>

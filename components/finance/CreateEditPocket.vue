@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useFinanceStore } from '~/stores/finance'
+import { Pocket } from '~/interfaces/finance'
 
 const financeStore = useFinanceStore()
 const isEditing = ref(false)
 const formRef = ref(null)
-const model = ref({
-  name: 'holas',
+const model = ref<Pocket>({
+  name: '',
   amount: 0
 })
 
@@ -33,6 +34,12 @@ watch(financeStore.pocketToEdit, (newValue) => {
 </script>
 
 <template>
+  <button
+    class="absolute bottom-1 right-2 btn bg-[#8c630b] btn-circle"
+    @click="financeStore.showPocketModal = true"
+  >
+    <AppIcon icon="ic:round-plus" width="30px" class="text-white" />
+  </button>
   <AppModal v-model="financeStore.showPocketModal">
     <AppForm
       ref="formRef"

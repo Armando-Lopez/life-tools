@@ -11,7 +11,7 @@ const userStore = useUserStore()
         Life tools
       </h2>
       <p class="py-6 text-xl">
-        Life tools provee un conjunto de herramientas para la vida contidiana
+        Life tools provee un conjunto de herramientas, para facilitar y automatizar tareas
       </p>
       <template v-if="userStore.user.uid">
         <ul class="p-2 space-y-4 border border-gray-400/50 rounded-md">

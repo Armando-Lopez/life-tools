@@ -3,13 +3,17 @@ import { configure, defineRule } from 'vee-validate'
 import { required, numeric, min_value, max } from '@vee-validate/rules'
 
 const customMessages = {
-  required: () => 'Requerido',
-  numeric: () => 'Sólo números',
+  max: (context) => {
+    const [maxValue] = context.rule.params
+    return Number(maxValue) >= context.value.length || `Máximo ${maxValue} caracteres`
+  },
   min_value: (context) => {
     const [paramValue, paramMask] = context.rule.params
     const param = Number(paramValue)
     return param <= context.value || `Ingresa minímo ${paramMask}`
-  }
+  },
+  numeric: () => 'Sólo números',
+  required: () => 'Requerido'
 }
 
 export default defineNuxtPlugin(() => {
