@@ -11,7 +11,7 @@ const userStore = useUserStore()
         Toutils
       </h2>
       <p class="py-6 text-xl">
-        Toutils provee un conjunto de herramientas, para facilitar y automatizar tareas
+        Toutils provee un conjunto de herramientas para la vida cotidiana
       </p>
       <template v-if="userStore.user.uid">
         <ul class="p-2 space-y-4 border border-gray-400/50 rounded-md">
