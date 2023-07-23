@@ -2,13 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply text-gray-600
-}
 .finance-nav a:before {
   content: '';
   @apply absolute top-0 w-0 h-1 bg-primary transition-all duration-300 ease-out
 }
 .finance-nav a.router-link-exact-active:before {
   @apply absolute top-0 w-full h-1 bg-primary
+}
+
+@layer components {
+  .base-card {
+    @apply card card-compact relative w-80 shadow-md border
+  }
 }

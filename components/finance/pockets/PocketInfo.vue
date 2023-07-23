@@ -2,9 +2,10 @@
 import { Pocket } from '~/interfaces/finance'
 import { useFinanceStore } from '~/stores/finance'
 
-const financeStore = useFinanceStore()
-
 const props = defineProps<{ pocket: Pocket }>()
+
+const financeStore = useFinanceStore()
+const { currency } = useFilter()
 
 async function deletePocket () {
   const hasDeleted = await financeStore.deletePocket(props.pocket.path || null)
@@ -15,7 +16,7 @@ async function deletePocket () {
 </script>
 
 <template>
-  <div class="card relative w-full max-w-xs shadow-md">
+  <div class="base-card">
     <div class="dropdown dropdown-end absolute right-2 top-2">
       <label tabindex="0" class="cursor-pointer">
         <AppIcon icon="pepicons-pop:dots-y" width="25" />
@@ -39,7 +40,9 @@ async function deletePocket () {
       <p class="card-title">
         {{ props.pocket.name }}
       </p>
-      <p v-currency="props.pocket.amount" class="text-green-600 text-xl" />
+      <p class="text-green-600 text-xl">
+        {{ currency(props.pocket.amount) }}
+      </p>
     </div>
   </div>
 </template>

@@ -3,6 +3,8 @@ import { useFinanceStore } from '~/stores/finance'
 import { Pocket } from '~/interfaces/finance'
 
 const financeStore = useFinanceStore()
+const { currency } = useFilter()
+
 const isEditing = ref(false)
 const formRef = ref(null)
 const model = ref<Pocket>({
@@ -23,11 +25,13 @@ async function savePocket () {
 watch(financeStore.pocketToEdit, (newValue) => {
   isEditing.value = !!newValue.data.id
   if (isEditing.value) {
+    // @ts-ignore
     formRef.value.setValues({
       name: newValue.data.name,
       amount: newValue.data.amount
     })
   } else {
+    // @ts-ignore
     formRef.value.resetForm()
   }
 })
@@ -35,7 +39,7 @@ watch(financeStore.pocketToEdit, (newValue) => {
 
 <template>
   <button
-    class="absolute bottom-1 right-2 btn bg-[#8c630b] btn-circle"
+    class="fixed bottom-16 right-2 btn bg-green-500 btn-circle"
     @click="financeStore.showPocketModal = true"
   >
     <AppIcon icon="ic:round-plus" width="30px" class="text-white" />
@@ -65,6 +69,7 @@ watch(financeStore.pocketToEdit, (newValue) => {
         rules="required|numeric|min_value:100,$100"
         type="number"
       />
+      <strong>{{ currency(model.amount) }}</strong>
       <button class="btn btn-block btn-success mt-4">
         <span>Guardar</span>
       </button>

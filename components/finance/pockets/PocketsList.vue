@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useFinanceStore } from '~/stores/finance'
-import PocketInfo from '~/components/finance/PocketInfo.vue'
+import PocketInfo from '~/components/finance/pockets/PocketInfo.vue'
 
 const financeStore = useFinanceStore()
 
@@ -18,7 +18,7 @@ onMounted(() => {
         Bolsillos
       </p>
     </div>
-    <AppLoader v-if="financeStore.pockets.isLoading" />
+    <AppLoader v-if="financeStore.pockets.isLoading" class="mx-auto" />
     <div v-else-if="financeStore.pockets.data.length" class="flex flex-wrap gap-5">
       <PocketInfo
         v-for="pocket in financeStore.pockets.data"

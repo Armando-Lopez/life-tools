@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore'
+import { deleteDoc, doc, setDoc, updateDoc } from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { Goal, Pocket } from '~/interfaces/finance'
 import { useUserStore } from '~/stores/user'
 import { generateId } from '~/helpers'
+import { useFirestore } from '~/composables/useFirestore'
 
 export const useFinanceStore = defineStore('financeStore', () => {
+  const { getDocs } = useFirestore()
   const { $db } = useNuxtApp()
   const userStore = useUserStore()
 
@@ -53,6 +55,13 @@ export const useFinanceStore = defineStore('financeStore', () => {
     }
   }
 
+  async function getPockets () {
+    pockets.isLoading = true
+    const { success } = await getDocs(`${userStore.user.email}/finance/pockets`)
+    success((data: any) => (pockets.data = data))
+    pockets.isLoading = false
+  }
+
   async function deletePocket (path: string | null): Promise<boolean> {
     try {
       if (!path) {
@@ -62,22 +71,6 @@ export const useFinanceStore = defineStore('financeStore', () => {
       return true
     } catch (err) {
       return false
-    }
-  }
-
-  async function getPockets () {
-    try {
-      pockets.isLoading = true
-      const docs = await getDocs(collection($db, `${userStore.user.email}/finance/pockets`))
-      pockets.data = []
-      docs.forEach((doc) => {
-        const { name, amount } = doc.data()
-        pockets.data.push({ id: doc.id, amount, name, path: doc.ref.path })
-      })
-    } catch (err) {
-      // console.error(err)
-    } finally {
-      pockets.isLoading = false
     }
   }
 
@@ -106,19 +99,16 @@ export const useFinanceStore = defineStore('financeStore', () => {
     isCreating: false,
     data: <Goal[]>[]
   })
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async function crateGoal (goal: Goal): Promise<boolean> {
+  async function createGoal (goal: Goal): Promise<boolean> {
     try {
       goals.isCreating = true
       const id = generateId()
-      const data = {
+      const data = <Goal>{
+        ...goal,
         id,
-        name: goal.name,
-        amount: goal.finalAmount,
-        currentAmount: 0,
         created: dayjs().format('YYYY-MM-DD HH:mm:ss')
       }
-      await setDoc(doc($db, `${userStore.user.email}/finance/pockets/${id}`), data)
+      await setDoc(doc($db, `${userStore.user.email}/finance/goals/${id}`), data)
       return true
     } catch (err) {
       console.error(err)
@@ -127,6 +117,10 @@ export const useFinanceStore = defineStore('financeStore', () => {
       pockets.isCreating = false
     }
   }
+  async function getGoals () {
+    const { success } = await getDocs(`${userStore.user.email}/finance/goals`)
+    success((data: any) => (goals.data = data))
+  }
   // GOALS--->
 
   // <---TRANSACTIONS
@@ -134,16 +128,18 @@ export const useFinanceStore = defineStore('financeStore', () => {
   // TRANSACTIONS--->
 
   return {
-    cratePocket,
-    deletePocket,
-    getPockets,
     goals,
     pocketToEdit,
     pockets,
     pocketsNames,
-    setPocketToEdit,
     showPocketModal,
     totalBalance,
+    cratePocket,
+    createGoal,
+    deletePocket,
+    getGoals,
+    getPockets,
+    setPocketToEdit,
     updatePocket
   }
 })

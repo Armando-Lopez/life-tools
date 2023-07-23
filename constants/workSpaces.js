@@ -1,5 +1,6 @@
 export const WORK_SPACES = [
   {
+    isActive: true,
     id: 'finance',
     routeName: 'finanzas-bolsillos',
     name: 'Mis finanzas',
@@ -7,6 +8,7 @@ export const WORK_SPACES = [
     description: 'Haz un seguimiento de tu billetera, tanto en cuentas como efectivo, organiza cuentas y ahorros'
   },
   {
+    isActive: false,
     id: 'tasks_track',
     routeName: 'seguimiento-de-tareas',
     name: 'Seguimiento de tareas',

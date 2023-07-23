@@ -1,3 +1,35 @@
 <template>
-  <span class="loading loading-dots loading-lg text-info" />
+  <div class="loader relative" />
 </template>
+
+<style scoped>
+.loader {
+  width: 64px;
+  height: 60px;
+}
+.loader::after {
+  content: '';
+  @apply absolute left-0 bottom-0 bg-secondary;
+  width: 64px;
+  height: 32px;
+  border-radius: 0 0 50px 50px;
+  animation: move 0.5s linear infinite alternate;
+}
+.loader::before {
+  content: '';
+  @apply absolute left-1/2 top-0 bg-primary;
+  width: 24px;
+  height: 24px;
+  transform: translateX(-50%) rotate(0deg);
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  100% { transform: translateX(-50%) rotate(360deg)}
+}
+@keyframes move {
+  0% { transform: rotate(10deg)}
+  100% { transform: rotate(-10deg)}
+}
+
+</style>

@@ -5,13 +5,13 @@ const { $auth } = useNuxtApp()
 </script>
 
 <template>
-  <header class="sticky top-0 z-10 navbar bg-base-100 shadow-md">
+  <header class="sticky top-0 z-10 navbar bg-base-100 shadow">
     <div class="container mx-auto">
       <div class="flex-1">
         <NuxtLink to="/" class="flex items-center gap-2">
-          <img src="/favicon.ico" class="w-10">
+          <img src="/apple-touch-icon.png" class="w-14" alt="Toutils logo">
           <h1 class="text-primary text-2xl font-bold">
-            Life tools
+            Toutils
           </h1>
         </NuxtLink>
       </div>

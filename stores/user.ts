@@ -12,7 +12,7 @@ export const useUserStore = defineStore('userStore', () => {
     photoURL: null
   })
 
-  const authTokenAccess = ref({})
+  const googleAuthToken = ref<any>(null)
 
   function setUser (currentUser: User | null) {
     user.uid = currentUser?.uid || null
@@ -20,28 +20,6 @@ export const useUserStore = defineStore('userStore', () => {
     user.displayName = currentUser?.displayName || null
     user.photoURL = currentUser?.photoURL || null
     hasLoadedAuth.value = true
-  }
-
-  async function initGoogleApi () {
-    const config = useRuntimeConfig().public
-    const CLIENT_ID = config.GOOGLE_API_CLIENT_ID
-    const API_KEY = config.FIREBASE_API_KEY
-    const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'
-    const SCOPES = 'https://www.googleapis.com/auth/calendar'
-    // @ts-ignore
-    await window.gapi.load('client', async () => {
-      // @ts-ignore
-      await window.gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: [DISCOVERY_DOC]
-      })
-      // @ts-ignore
-      authTokenAccess.value = window.google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: '' // defined later
-      })
-    })
   }
 
   function signIn () {
@@ -67,12 +45,16 @@ export const useUserStore = defineStore('userStore', () => {
     // })
   }
 
+  function setGoogleAuthToken (token: any) {
+    googleAuthToken.value = token
+  }
+
   return {
-    authTokenAccess,
     hasLoadedAuth,
-    initGoogleApi,
     setUser,
     signIn,
-    user
+    user,
+    googleAuthToken,
+    setGoogleAuthToken
   }
 })

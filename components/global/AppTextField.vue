@@ -30,7 +30,7 @@ watch(formContext.errors, value => (error.value = value[props.name]))
 <template>
   <div>
     <label v-if="props.label" :for="props.name" class="label">
-      <span class="label-text">{{ props.label }}</span>
+      <span class="label-text" :class="{ 'text-error': !!error }">{{ props.label }}</span>
     </label>
     <input
       :id="props.name"

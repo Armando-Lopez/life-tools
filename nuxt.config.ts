@@ -2,6 +2,7 @@
 import eslintPlugin from 'vite-plugin-eslint'
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  // @ts-ignore
   vite: {
     plugins: [eslintPlugin()]
   },
@@ -20,12 +21,17 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Life tools',
+      title: 'Toutils',
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
+      meta: [
+        { name: 'description', content: 'Toutils provee un  conjunto de herramientas para la vida cotidiana' },
+        { name: 'keywords', content: 'herramientas, vida, ayuda, finanzas, productividad, economia, tareas' },
+        { name: 'robots', content: 'index,follow' }
+      ],
       script: [
-        { src: 'https://apis.google.com/js/api.js', defer: true, async: true },
-        { src: 'https://accounts.google.com/gsi/client', defer: true, async: true }
+        // { src: 'https://apis.google.com/js/api.js', defer: true, async: true },
+        // { src: 'https://accounts.google.com/gsi/client', defer: true, async: true }
       ]
     }
   },
@@ -34,11 +40,21 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/eslint-module',
     '@nuxtjs/tailwindcss',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@nuxtjs/i18n',
+    '@nuxtjs/web-vitals'
   ],
   components: [
     '~/components/global/'
   ],
+  i18n: {
+    vueI18n: './i18n.config.ts'
+  },
+  webVitals: {
+    // provider: 'log',
+    debug: true, // debug enable metrics reporting on dev environments
+    disabled: false
+  },
   postcss: {
     plugins: {
       tailwindcss: {},
