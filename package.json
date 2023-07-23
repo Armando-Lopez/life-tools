@@ -26,6 +26,7 @@
     "@nuxtjs/web-vitals": "^0.2.6",
     "@types/node": "^18",
     "@typescript-eslint/parser": "^5.59.9",
+    "@vite-pwa/nuxt": "^0.1.0",
     "@vueuse/core": "^10.2.1",
     "@vueuse/nuxt": "^10.2.1",
     "daisyui": "^3.1.6",

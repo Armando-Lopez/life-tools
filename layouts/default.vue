@@ -6,6 +6,7 @@ import TheHeader from '~/components/layout/TheHeader.vue'
 
 <template>
   <div class="relative min-h-screen flex flex-col">
+    <VitePwaManifest />
     <TheHeader />
     <slot />
     <!--    <div class="h-screen w-screen grid place-items-center">-->

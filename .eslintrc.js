@@ -19,7 +19,6 @@ module.exports = {
     'no-console': 'off',
     'vue/html-self-closing': 'error',
     'vue/html-indent': 'error',
-    'vue/singleline-html-element-content-newline': 'error',
     'vue/html-closing-bracket-spacing': 'error'
   }
 }

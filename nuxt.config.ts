@@ -42,13 +42,33 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@vueuse/nuxt',
     '@nuxtjs/i18n',
-    '@nuxtjs/web-vitals'
+    '@nuxtjs/web-vitals',
+    '@vite-pwa/nuxt'
   ],
   components: [
     '~/components/global/'
   ],
   i18n: {
     vueI18n: './i18n.config.ts'
+  },
+  pwa: {
+    mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
+    manifest: {
+      name: 'Toutils',
+      short_name: 'Toutils',
+      description: 'Herramientas estilo de vida',
+      icons: [{ src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' }, { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' }],
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      display: 'standalone'
+    },
+    workbox: {
+      navigateFallback: '/'
+    },
+    devOptions: {
+      enabled: false,
+      type: 'module'
+    }
   },
   webVitals: {
     // provider: 'log',
