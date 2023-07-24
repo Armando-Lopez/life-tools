@@ -2,14 +2,13 @@ import { defineStore } from 'pinia'
 import { deleteDoc, doc, setDoc, updateDoc } from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { Goal, Pocket } from '~/interfaces/finance'
-import { useUserStore } from '~/stores/user'
 import { generateId } from '~/helpers'
 import { useFirestore } from '~/composables/useFirestore'
+import { GOALS_PATH, POCKETS_PATH } from '~/constants/firebaseConstants'
 
 export const useFinanceStore = defineStore('financeStore', () => {
   const { getDocs } = useFirestore()
   const { $db } = useNuxtApp()
-  const userStore = useUserStore()
 
   // <---POCKETS
   const pockets = reactive({
@@ -35,30 +34,12 @@ export const useFinanceStore = defineStore('financeStore', () => {
     }
   })
 
-  async function cratePocket (pocket: Pocket): Promise<boolean> {
-    try {
-      pockets.isCreating = true
-      const id = generateId()
-      const data = {
-        id,
-        name: pocket.name,
-        amount: pocket.amount,
-        created: dayjs().format('YYYY-MM-DD HH:mm:ss')
-      }
-      await setDoc(doc($db, `${userStore.user.email}/finance/pockets/${id}`), data)
-      return true
-    } catch (err) {
-      console.error(err)
-      return false
-    } finally {
-      pockets.isCreating = false
-    }
-  }
-
   async function getPockets () {
     pockets.isLoading = true
-    const { success } = await getDocs(`${userStore.user.email}/finance/pockets`)
-    success((data: any) => (pockets.data = data))
+    const { data } = await getDocs(POCKETS_PATH)
+    if (data) {
+      pockets.data = data
+    }
     pockets.isLoading = false
   }
 
@@ -108,7 +89,7 @@ export const useFinanceStore = defineStore('financeStore', () => {
         id,
         created: dayjs().format('YYYY-MM-DD HH:mm:ss')
       }
-      await setDoc(doc($db, `${userStore.user.email}/finance/goals/${id}`), data)
+      await setDoc(doc($db, `${GOALS_PATH}/${id}`), data)
       return true
     } catch (err) {
       console.error(err)
@@ -118,8 +99,10 @@ export const useFinanceStore = defineStore('financeStore', () => {
     }
   }
   async function getGoals () {
-    const { success } = await getDocs(`${userStore.user.email}/finance/goals`)
-    success((data: any) => (goals.data = data))
+    const { data } = await getDocs(GOALS_PATH)
+    if (data) {
+      goals.data = data
+    }
   }
   // GOALS--->
 
@@ -134,7 +117,6 @@ export const useFinanceStore = defineStore('financeStore', () => {
     pocketsNames,
     showPocketModal,
     totalBalance,
-    cratePocket,
     createGoal,
     deletePocket,
     getGoals,

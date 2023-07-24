@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useFinanceStore } from '~/stores/finance'
 import { Pocket } from '~/interfaces/finance'
+import { POCKETS_PATH } from '~/constants/firebaseConstants'
 
 const financeStore = useFinanceStore()
+const { isLoading, createDoc, updateDoc } = useFirestore()
 const { currency } = useFilter()
 
 const isEditing = ref(false)
@@ -14,9 +16,9 @@ const model = ref<Pocket>({
 
 async function savePocket () {
   if (isEditing.value) {
-    await financeStore.updatePocket(financeStore.pocketToEdit.data.path, model.value)
+    await updateDoc(financeStore.pocketToEdit.data.path, model.value)
   } else {
-    await financeStore.cratePocket(model.value)
+    await createDoc(POCKETS_PATH, model.value)
   }
   financeStore.showPocketModal = false
   await financeStore.getPockets()
@@ -39,17 +41,18 @@ watch(financeStore.pocketToEdit, (newValue) => {
 
 <template>
   <button
-    class="fixed bottom-16 right-2 btn bg-green-500 btn-circle"
+    class="btn btn-secondary btn-circle"
+    title="Crear bolsillo"
     @click="financeStore.showPocketModal = true"
   >
-    <AppIcon icon="ic:round-plus" width="30px" class="text-white" />
+    <AppIcon icon="mdi:pencil-add" width="20px" class="text-white" />
   </button>
   <AppModal v-model="financeStore.showPocketModal">
     <AppForm
       ref="formRef"
       v-model="model"
       autocomplete="off"
-      :is-loading="financeStore.pockets.isCreating || financeStore.pocketToEdit.isSaving"
+      :is-loading="isLoading"
       @success="savePocket"
     >
       <p class="mb-5 font-semibold text-center text-2xl">
@@ -65,7 +68,7 @@ watch(financeStore.pocketToEdit, (newValue) => {
       <AppTextField
         label="¿Cuánto dinero tienes en el bolsillo?"
         name="amount"
-        placeholder="$100.000.000"
+        placeholder="$1.000.000"
         rules="required|numeric|min_value:100,$100"
         type="number"
       />

@@ -2,9 +2,18 @@
 import { useFinanceStore } from '~/stores/finance'
 import PocketsList from '~/components/finance/pockets/PocketsList.vue'
 import PocketCreateEdit from '~/components/finance/pockets/PocketCreateEdit.vue'
+import RegisterTransaction from '~/components/finance/transactions/RegisterTransaction.vue'
+import { TRANSACTIONS_TYPES } from '~/constants/firebaseConstants'
 
 const financeStore = useFinanceStore()
 const { currency } = useFilter()
+
+const fab = ref(false)
+
+function onTransactionRegister () {
+  fab.value = false
+  financeStore.getPockets()
+}
 </script>
 
 <template>
@@ -21,7 +30,19 @@ const { currency } = useFilter()
       </div>
     </div>
   </section>
+  <AppFabButton v-model="fab">
+    <PocketCreateEdit />
+    <RegisterTransaction
+      :type="TRANSACTIONS_TYPES.INPUT"
+      button-class="btn-success"
+      @success="onTransactionRegister"
+    />
+    <RegisterTransaction
+      :type="TRANSACTIONS_TYPES.OUTPUT"
+      button-class="btn-error"
+      @success="onTransactionRegister"
+    />
+  </AppFabButton>
   <div class="divider" />
   <PocketsList />
-  <PocketCreateEdit />
 </template>

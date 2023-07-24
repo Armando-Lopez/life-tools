@@ -1,35 +1,71 @@
-import { collection, doc, getDocs as getData, setDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc as getFirebaseDoc,
+  getDocs as getFirebaseDocs, serverTimestamp,
+  setDoc,
+  updateDoc as updateFirebaseDoc
+} from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { generateId } from '~/helpers'
+import { useUserStore } from '~/stores/user'
 
 export const useFirestore = () => {
   const { $db } = useNuxtApp()
+  const userStore = useUserStore()
+  const isLoading = ref<boolean>(false)
+
+  const toggleLoading = (): boolean => (isLoading.value = !isLoading.value)
+
   const createDoc = async (path: string, values: Object) => {
     try {
+      toggleLoading()
       const id = generateId()
       const data = {
         ...values,
         id,
-        created: dayjs().format('YYYY-MM-DD HH:mm:ss')
+        created: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        timestamp: serverTimestamp()
       }
-      await setDoc(doc($db, `${path}/${id}`), data)
-      return {
-        success: (cb: Function) => cb?.(data),
-        error: (cb: Function) => cb?.()
-      }
+      // @ts-ignore
+      await setDoc(doc($db, `${userStore.user.email}/${path}/${id}`), data)
+      return { data, error: null }
     } catch (error) {
-      return {
-        success: (cb: Function) => cb?.(),
-        error: (cb: Function) => cb?.(error)
+      console.error(error)
+      return { error, data: null }
+    } finally {
+      toggleLoading()
+    }
+  }
+
+  const getDoc = async (path: string) => {
+    try {
+      toggleLoading()
+      // @ts-ignore
+      const docSnap = await getFirebaseDoc(doc($db, `${userStore.user.email}/${path}`))
+      let data: any = null
+      if (docSnap.exists()) {
+        data = {
+          ...docSnap.data(),
+          id: docSnap.id,
+          path: docSnap.ref.path
+        }
       }
+      return { data, error: null }
+    } catch (error) {
+      console.error(error)
+      return { error, data: null }
+    } finally {
+      toggleLoading()
     }
   }
 
   const getDocs = async (path: string) => {
     try {
+      toggleLoading()
       const data = <any>[]
       // @ts-ignore
-      const docs = await getData(collection($db, path))
+      const docs = await getFirebaseDocs(collection($db, `${userStore.user.email}/${path}`))
       // @ts-ignore
       docs.forEach((doc: any) => {
         data.push({
@@ -38,19 +74,38 @@ export const useFirestore = () => {
           path: doc.ref.path
         })
       })
-      return {
-        success: (cb: Function) => cb?.(data),
-        error: (cb: Function) => cb?.()
-      }
+      return { data, error: null }
     } catch (error) {
-      return {
-        success: (cb: Function) => cb?.(),
-        error: (cb: Function) => cb?.(error)
-      }
+      console.error(error)
+      return { error, data: null }
+    } finally {
+      toggleLoading()
     }
   }
+
+  const updateDoc = async (path: string, values: object) => {
+    try {
+      toggleLoading()
+      // @ts-ignore
+      const docRef = doc($db, `${userStore.user.email}/${path}`)
+      await updateFirebaseDoc(docRef, {
+        ...values,
+        timestamp: serverTimestamp()
+      })
+      return { data: docRef, error: null }
+    } catch (error) {
+      console.error(error)
+      return { error, data: null }
+    } finally {
+      toggleLoading()
+    }
+  }
+
   return {
+    isLoading,
     createDoc,
-    getDocs
+    getDoc,
+    getDocs,
+    updateDoc
   }
 }

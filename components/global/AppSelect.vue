@@ -2,9 +2,11 @@
 import { useFormField } from '~/composables/useFormField'
 
 const props = defineProps({
-  name: { type: String, required: true },
-  placeholder: { type: String, default: '' },
+  itemText: { type: String, default: 'name' },
+  itemValue: { type: String, default: 'id' },
+  items: { type: Array, required: true },
   label: { type: String, default: '' },
+  name: { type: String, required: true },
   rules: { type: String, default: '' }
 })
 
@@ -19,14 +21,17 @@ const { formContext, error } = useFormField({
     <label v-if="props.label" :for="props.name" class="label">
       <span class="label-text" :class="{ 'text-error': !!error }">{{ props.label }}</span>
     </label>
-    <textarea
+    <select
       :id="props.name"
-      :class="{ 'textarea-error': !!error }"
+      :class="{ 'select-error': !!error }"
       :name="props.name"
-      :placeholder="props.placeholder"
-      class="textarea textarea-primary h-24 w-full"
+      class="select select-bordered select-primary w-full"
       v-bind="formContext.inputsBindings[props.name]"
-    />
+    >
+      <option v-for="item in props.items" :key="item.name" :value="item[props.itemValue]">
+        {{ item[props.itemText] }}
+      </option>
+    </select>
     <label :for="props.name" class="label">
       <span class="label-text-alt text-error">{{ error }}</span>
     </label>

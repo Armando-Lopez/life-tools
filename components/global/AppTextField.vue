@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useFormField } from '~/composables/useFormField'
+
 const props = defineProps({
   name: { type: String, required: true },
   type: { type: String, default: 'text' },
@@ -7,24 +9,10 @@ const props = defineProps({
   rules: { type: String, default: '' }
 })
 
-const formContext = inject('appForm')
-onMounted(() => {
-  // @ts-ignore
-  formContext.registerInput(props.name as string)
+const { formContext, error } = useFormField({
+  name: props.name,
+  rules: props.rules
 })
-watch(() => props.rules, (newValue) => {
-  if (newValue) {
-    // @ts-ignore
-    formContext.setRules({
-      inputName: props.name,
-      rules: props.rules
-    })
-  }
-}, { immediate: true })
-
-const error = ref('')
-// @ts-ignore
-watch(formContext.errors, value => (error.value = value[props.name]))
 </script>
 
 <template>

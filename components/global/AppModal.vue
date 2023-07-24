@@ -10,24 +10,24 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
 }>()
 
-const modal = ref(null)
+const modal = ref<HTMLDialogElement>()
+const isOpen = ref(false)
 
-const innerValue = ref(false)
-watch(innerValue, (newValue: boolean) => {
+watch(isOpen, (newValue: boolean) => {
   if (newValue) {
-    modal.value?.showModal?.()
+    modal.value?.showModal()
   } else {
-    modal.value?.close?.()
+    modal.value?.close()
   }
   emit('update:modelValue', newValue)
 })
 
 watchEffect(() => {
-  innerValue.value = props.modelValue
+  isOpen.value = props.modelValue
 })
 
 function toggle () {
-  innerValue.value = !innerValue.value
+  isOpen.value = !isOpen.value
 }
 </script>
 

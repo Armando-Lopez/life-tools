@@ -1,3 +1,9 @@
+## 0.3.0 (2023-07-24)
+### Features
+* Ahora puedes agregar entradas de dinero a tus bolsillos
+* Ahora puedes agregar salidas de dinero a tus bolsillos
+
+
 ## 0.2.0 (2023-07-23)
 ### Features
 * Agregamos soporte para PWA

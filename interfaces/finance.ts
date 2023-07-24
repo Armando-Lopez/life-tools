@@ -1,17 +1,27 @@
 export interface Goal {
+  created: string
+  currentAmount: number | null
+  description?: string
+  finalAmount: number | null
   id: string
   name: string
-  description?: string | number
-  currentAmount: number | null
-  finalAmount: number | null
-  created: string
   path?: string
 }
 
 export interface Pocket {
   amount: number
-  id?: string | number
+  created?: string
+  id?: string
   name: string
   path?: string
+}
+
+export interface TransactionInput {
+  amount: number
   created?: string
+  description?: string
+  id?: string
+  pocketId: string
+  scheduledTo?: string
+  type: string
 }

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { useUserStore } from '~/stores/user'
-
 definePageMeta({ middleware: 'auth' })
-const userStore = useUserStore()
 </script>
 
 <template>
   <main class="flex-grow flex flex-col container mx-auto pb-16">
-    <div v-if="userStore.hasLoadedAuth" class="flex-grow relative">
+    <div class="flex-grow relative">
       <NuxtPage />
     </div>
   </main>
