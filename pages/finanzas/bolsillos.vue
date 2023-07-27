@@ -34,12 +34,12 @@ function onTransactionRegister () {
     <PocketCreateEdit />
     <RegisterTransaction
       :type="TRANSACTIONS_TYPES.INPUT"
-      button-class="btn-success"
+      button-class="bg-green-400"
       @success="onTransactionRegister"
     />
     <RegisterTransaction
       :type="TRANSACTIONS_TYPES.OUTPUT"
-      button-class="btn-error"
+      button-class="bg-red-400"
       @success="onTransactionRegister"
     />
   </AppFabButton>

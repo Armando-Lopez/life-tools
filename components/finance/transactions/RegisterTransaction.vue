@@ -145,8 +145,8 @@ async function saveDescription () {
         <strong>{{ currency(model.amount) }}</strong>
         <AppTextField
           name="description"
-          label="Descripción (opcional)"
-          rules="max:200"
+          label="Motivo (opcional)"
+          rules="required|max:200"
         />
         <button class="btn btn-block btn-success mt-4">
           <span>Guardar</span>

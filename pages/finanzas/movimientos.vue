@@ -1,15 +1,26 @@
 <script setup lang="ts">
-// import { useFinanceStore } from '~/stores/finance'
+import { TRANSACTIONS_PATH } from '~/constants/firebaseConstants'
+import { Transaction } from '~/interfaces/finance'
+import TransactionItem from '~/components/finance/transactions/TransactionItem.vue'
 
-// const financeStore = useFinanceStore()
+const { getDocs } = useFirestore()
+const transactions = ref<Transaction[]>([])
+
+onMounted(async () => {
+  const { data } = await getDocs(TRANSACTIONS_PATH)
+  if (data) {
+    transactions.value = data
+  }
+})
 </script>
 
 <template>
-  <section>
-    <div class="flex w-full justify-around">
-      <AppIcon icon="mdi:input" :rotate="3" width="50" />
-      <AppIcon icon="mdi:output" :rotate="3" width="50" />
-    </div>
+  <section class="pt-4 px-4">
+    <ul>
+      <li v-for="item in transactions" :key="item.id">
+        <TransactionItem :transaction="item" />
+      </li>
+    </ul>
   </section>
   <div class="divider" />
 </template>
