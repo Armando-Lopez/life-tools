@@ -6,18 +6,20 @@ import { useUserStore } from '~/stores/user'
 import { User } from '~/interfaces'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.hook('app:created', () => {
-    document.documentElement.setAttribute('data-theme', 'light')
+  nuxtApp.hook('app:mounted', () => {
+    // document.documentElement.setAttribute('data-theme', 'light')
     const router = useRouter()
     const userStore = useUserStore()
     const { $auth } = useNuxtApp()
     onAuthStateChanged(<Auth>$auth, (currentUser) => {
-      if (currentUser) {
-        userStore.setUser(currentUser as User)
-      } else {
-        userStore.setUser(null)
-        router.push('/')
-      }
+      setTimeout(() => {
+        if (currentUser) {
+          userStore.setUser(currentUser as User)
+        } else {
+          userStore.setUser(null)
+          router.push('/')
+        }
+      }, 1000)
     })
   })
   dayjs.extend(duration)

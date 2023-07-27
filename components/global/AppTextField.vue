@@ -9,7 +9,7 @@ const props = defineProps({
   rules: { type: String, default: '' }
 })
 
-const { formContext, error } = useFormField({
+const { formContext, error, isRequired } = useFormField({
   name: props.name,
   rules: props.rules
 })
@@ -18,7 +18,10 @@ const { formContext, error } = useFormField({
 <template>
   <div>
     <label v-if="props.label" :for="props.name" class="label">
-      <span class="label-text" :class="{ 'text-error': !!error }">{{ props.label }}</span>
+      <span class="label-text" :class="{ 'text-error': !!error }">
+        {{ props.label }}
+        <strong v-if="isRequired" class="text-info text-lg">*</strong>
+      </span>
     </label>
     <input
       :id="props.name"

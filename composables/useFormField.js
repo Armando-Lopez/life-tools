@@ -18,8 +18,11 @@ export const useFormField = ({ name, rules }) => {
   // @ts-ignore
   watch(formContext.errors, value => (error.value = value[name]))
 
+  const isRequired = computed(() => rules.includes('required'))
+
   return {
     error,
-    formContext
+    formContext,
+    isRequired
   }
 }

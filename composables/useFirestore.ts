@@ -4,7 +4,8 @@ import {
   getDoc as getFirebaseDoc,
   getDocs as getFirebaseDocs, serverTimestamp,
   setDoc,
-  updateDoc as updateFirebaseDoc
+  updateDoc as updateFirebaseDoc,
+  arrayUnion
 } from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { generateId } from '~/helpers'
@@ -21,15 +22,29 @@ export const useFirestore = () => {
     try {
       toggleLoading()
       const id = generateId()
+      // @ts-ignore
       const data = {
-        ...values,
-        id,
         created: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
+        ...values
       }
       // @ts-ignore
       await setDoc(doc($db, `${userStore.user.email}/${path}/${id}`), data)
-      return { data, error: null }
+      return { data: { ...data, id }, error: null }
+    } catch (error) {
+      console.error(error)
+      return { error, data: null }
+    } finally {
+      toggleLoading()
+    }
+  }
+
+  const createDocOrUpdateIfExists = async (path: string, values: Object) => {
+    try {
+      toggleLoading()
+      // @ts-ignore
+      await setDoc(doc($db, `${userStore.user.email}/${path}`), values, { merge: true })
+      return { data: { values }, error: null }
     } catch (error) {
       console.error(error)
       return { error, data: null }
@@ -103,7 +118,9 @@ export const useFirestore = () => {
 
   return {
     isLoading,
+    addToArray: arrayUnion,
     createDoc,
+    createDocOrUpdateIfExists,
     getDoc,
     getDocs,
     updateDoc

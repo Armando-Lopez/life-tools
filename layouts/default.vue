@@ -5,12 +5,14 @@ const userStore = useUserStore()
 </script>
 
 <template>
-  <div class="relative min-h-screen flex flex-col">
+  <div>
     <VitePwaManifest />
-    <TheHeader />
-    <slot v-if="userStore.hasLoadedAuth" />
-    <!--    <div class="h-screen w-screen grid place-items-center">-->
-    <!--      <AppLoader />-->
-    <!--    </div>-->
+    <div v-if="userStore.hasLoadedAuth" class="relative min-h-screen flex flex-col">
+      <TheHeader />
+      <slot />
+    </div>
+    <div v-else class="h-screen w-screen grid place-items-center">
+      <AppLoader />
+    </div>
   </div>
 </template>

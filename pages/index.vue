@@ -7,12 +7,12 @@ const userStore = useUserStore()
 <template>
   <section>
     <div class="max-w-md mx-auto p-4 text-center">
-      <h2 class="text-5xl font-bold text-primary">
+      <h2 class="mb-6 text-5xl font-bold text-primary">
         Toutils
       </h2>
-      <p class="py-6 text-xl">
-        Toutils provee un conjunto de herramientas para la vida cotidiana
-      </p>
+      <!--      <p class="py-6 text-xl">-->
+      <!--        Conjunto de herramientas para la vida cotidiana-->
+      <!--      </p>-->
       <ul v-if="userStore.user.uid" class="p-2 space-y-4 border border-gray-400/50 rounded-md">
         <template v-for="workSpace in WORK_SPACES">
           <li v-if="workSpace.isActive" :key="workSpace.id">

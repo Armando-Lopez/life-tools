@@ -12,11 +12,11 @@ export interface Pocket {
   amount: number
   created?: string
   id?: string
-  name: string
+  name?: string
   path?: string
 }
 
-export interface TransactionInput {
+export interface Transaction {
   amount: number
   created?: string
   description?: string
