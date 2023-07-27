@@ -3,7 +3,7 @@ import { TRANSACTIONS_PATH } from '~/constants/firebaseConstants'
 import { Transaction } from '~/interfaces/finance'
 import TransactionItem from '~/components/finance/transactions/TransactionItem.vue'
 
-const { getDocs } = useFirestore()
+const { isLoading, getDocs } = useFirestore()
 const transactions = ref<Transaction[]>([])
 
 onMounted(async () => {
@@ -16,7 +16,8 @@ onMounted(async () => {
 
 <template>
   <section class="pt-4 px-4">
-    <ul>
+    <AppLoader v-if="isLoading" class="mx-auto" />
+    <ul v-else>
       <li v-for="item in transactions" :key="item.id">
         <TransactionItem :transaction="item" />
       </li>
