@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import { useFinanceStore } from '~/stores/finance'
+
 definePageMeta({ middleware: 'auth' })
+const financeStore = useFinanceStore()
+
+onMounted(() => {
+  if (!financeStore.pockets.data.length) {
+    financeStore.getPockets()
+  }
+})
 </script>
 
 <template>

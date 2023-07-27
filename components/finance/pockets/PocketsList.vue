@@ -3,12 +3,6 @@ import { useFinanceStore } from '~/stores/finance'
 import PocketInfo from '~/components/finance/pockets/PocketInfo.vue'
 
 const financeStore = useFinanceStore()
-
-onMounted(() => {
-  if (!financeStore.pockets.data.length) {
-    financeStore.getPockets()
-  }
-})
 </script>
 
 <template>

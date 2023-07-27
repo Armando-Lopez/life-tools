@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { Transaction } from '~/interfaces/finance'
 import { TRANSACTIONS_TYPES } from '~/constants/firebaseConstants'
+import { useFinanceStore } from '~/stores/finance'
+const financeStore = useFinanceStore()
 
 const props = defineProps<{ transaction: Transaction }>()
 const { currency } = useFilter()
+const pocketName = computed(() => financeStore.pockets.data.find(p => p.id === props.transaction.pocketId)?.name)
 </script>
 
 <template>
@@ -27,6 +30,7 @@ const { currency } = useFilter()
         />
       </div>
       <p>Motivo: {{ props.transaction.description }}</p>
+      <p v-if="pocketName">Bolsillo: {{ pocketName }}</p>
       <p>Fecha: {{ props.transaction.created }}</p>
     </div>
   </div>
