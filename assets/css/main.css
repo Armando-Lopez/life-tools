@@ -12,6 +12,6 @@
 
 @layer components {
   .base-card {
-    @apply card card-compact relative w-80 shadow-lg border border-neutral-content/20
+    @apply card card-compact relative w-full max-w-xs shadow-lg border border-neutral-content/20
   }
 }
