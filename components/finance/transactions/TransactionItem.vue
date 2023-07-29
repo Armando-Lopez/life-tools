@@ -3,35 +3,35 @@ import { Transaction } from '~/interfaces/finance'
 import { TRANSACTIONS_TYPES } from '~/constants/firebaseConstants'
 import { useFinanceStore } from '~/stores/finance'
 const financeStore = useFinanceStore()
-
-const props = defineProps<{ transaction: Transaction }>()
+const { formatTime } = useTime()
 const { currency } = useFilter()
+const props = defineProps<{ transaction: Transaction }>()
 const pocketName = computed(() => financeStore.pockets.data.find(p => p.id === props.transaction.pocketId)?.name)
 </script>
 
 <template>
-  <div class="base-card">
-    <div class="card-body p-1">
-      <div class="flex justify-between items-center">
-        <strong class="text-xl">{{ currency(props.transaction.amount) }}</strong>
-        <AppIcon
-          v-if="props.transaction.type === TRANSACTIONS_TYPES.INPUT"
-          icon="mdi:input"
-          :rotate="1"
-          width="25"
-          class="text-green-400"
-        />
-        <AppIcon
-          v-if="props.transaction.type === TRANSACTIONS_TYPES.OUTPUT"
-          icon="mdi:output"
-          :rotate="3"
-          width="25"
-          class="text-red-400"
-        />
+  <AppCard>
+    <AppAccordion>
+      <template #header>
+        <div class="flex gap-1 justify-between items-center">
+          <strong
+            class="text-xl"
+            :class="{
+              'text-green-500': props.transaction.type === TRANSACTIONS_TYPES.INPUT,
+              'text-red-500': props.transaction.type === TRANSACTIONS_TYPES.OUTPUT
+            }"
+          >
+            {{ currency(props.transaction.amount) }}
+          </strong>
+        </div>
+      </template>
+      <div>
+        <p>Fecha: {{ formatTime(props.transaction.created, 'dddd, D [de] MMMM YYYY, h:mm A') }}</p>
+        <p v-if="pocketName">
+          Bolsillo: {{ pocketName }}
+        </p>
+        <p>Motivo: {{ props.transaction.description }}</p>
       </div>
-      <p>Motivo: {{ props.transaction.description }}</p>
-      <p v-if="pocketName">Bolsillo: {{ pocketName }}</p>
-      <p>Fecha: {{ props.transaction.created }}</p>
-    </div>
-  </div>
+    </AppAccordion>
+  </AppCard>
 </template>

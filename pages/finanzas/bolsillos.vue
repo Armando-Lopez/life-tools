@@ -18,17 +18,15 @@ function onTransactionRegister () {
 
 <template>
   <section class="relative px-4 pt-4">
-    <div class="base-card">
-      <div class="card-body">
-        <h2 class="card-title">
-          Saldo total
-        </h2>
-        <p class="text-green-600 text-2xl font-semibold">
-          {{ currency(financeStore.totalBalance) }}
-        </p>
-        <div class="card-actions justify-end" />
-      </div>
-    </div>
+    <AppCard>
+      <h2 class="card-title">
+        Saldo total
+      </h2>
+      <p class="text-green-600 text-2xl font-semibold">
+        {{ currency(financeStore.totalBalance) }}
+      </p>
+      <div class="card-actions justify-end" />
+    </AppCard>
   </section>
   <AppFabButton v-model="fab">
     <PocketCreateEdit />

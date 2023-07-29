@@ -16,7 +16,7 @@ async function deletePocket () {
 </script>
 
 <template>
-  <div class="base-card">
+  <AppCard>
     <div class="dropdown dropdown-end absolute right-2 top-2">
       <label tabindex="0" class="cursor-pointer">
         <AppIcon icon="pepicons-pop:dots-y" width="25" />
@@ -36,13 +36,11 @@ async function deletePocket () {
         </li>
       </ul>
     </div>
-    <div class="card-body">
-      <p class="card-title">
-        {{ props.pocket.name }}
-      </p>
-      <p class="text-green-600 text-xl">
-        {{ currency(props.pocket.amount) }}
-      </p>
-    </div>
-  </div>
+    <p class="card-title">
+      {{ props.pocket.name }}
+    </p>
+    <p class="text-green-600 text-xl">
+      {{ currency(props.pocket.amount) }}
+    </p>
+  </AppCard>
 </template>

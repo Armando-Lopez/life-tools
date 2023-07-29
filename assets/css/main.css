@@ -10,8 +10,8 @@
   @apply absolute top-0 w-full h-1 bg-primary
 }
 
-@layer components {
-  .base-card {
-    @apply card card-compact relative w-full max-w-sm shadow-lg border border-neutral-content/20
+@layer utilities {
+  .with-transition {
+    @apply transition-all ease-in-out duration-300
   }
 }

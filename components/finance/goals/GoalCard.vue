@@ -18,24 +18,22 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="base-card">
-    <div class="card-body">
-      <p class="card-title">
-        {{ props.goal.name }}
-      </p>
-      <div
-        class="radial-progress bg-primary text-primary-content border-4 border-primary"
-        :style="`--value:${goalProgress};`"
-      >
-        {{ goalProgress }}%
-      </div>
-      <p>
-        <strong>
-          {{ currency(props.goal.currentAmount) }}
-          -
-          {{ currency(props.goal.finalAmount) }}
-        </strong>
-      </p>
+  <AppCard>
+    <p class="card-title">
+      {{ props.goal.name }}
+    </p>
+    <div
+      class="radial-progress bg-primary text-primary-content border-4 border-primary"
+      :style="`--value:${goalProgress};`"
+    >
+      {{ goalProgress }}%
     </div>
-  </div>
+    <p>
+      <strong>
+        {{ currency(props.goal.currentAmount) }}
+        -
+        {{ currency(props.goal.finalAmount) }}
+      </strong>
+    </p>
+  </AppCard>
 </template>

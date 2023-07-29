@@ -17,11 +17,9 @@ onMounted(async () => {
 <template>
   <section class="pt-4 px-4">
     <AppLoader v-if="isLoading" class="mx-auto" />
-    <ul v-else>
-      <li v-for="item in transactions" :key="item.id">
-        <TransactionItem :transaction="item" />
-      </li>
-    </ul>
+    <div v-else class="flex flex-wrap gap-4">
+      <TransactionItem v-for="item in transactions" :key="item.id" :transaction="item" />
+    </div>
   </section>
   <div class="divider" />
 </template>
