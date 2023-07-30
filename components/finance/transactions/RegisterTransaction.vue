@@ -3,7 +3,6 @@ import { useFinanceStore } from '~/stores/finance'
 import { Pocket, Transaction } from '~/interfaces/finance'
 import {
   POCKETS_PATH,
-
   FINANCE_PATH,
   TRANSACTIONS_PATH,
   TRANSACTIONS_TYPES
@@ -18,6 +17,7 @@ const emit = defineEmits(['success'])
 const typeHelp = {
   [TRANSACTIONS_TYPES.INPUT]: {
     title: 'Registrar entrada',
+    color: 'text-green-500',
     amountLabel: '¿Cuánto guardarás?',
     icon: 'mdi:input',
     iconRotate: '1',
@@ -25,6 +25,7 @@ const typeHelp = {
   },
   [TRANSACTIONS_TYPES.OUTPUT]: {
     title: 'Registrar salida',
+    color: 'text-red-500',
     amountLabel: '¿Cuánto sacarás?',
     icon: 'mdi:output',
     iconRotate: '3',
@@ -47,7 +48,15 @@ const model = ref<Transaction>({
 
 const pockets = computed(() => financeStore.pockets.data)
 const pocket = computed(() => pockets.value.find(p => p.id === model.value.pocketId))
-
+const amountAfter = computed(() => {
+  const currentIndPocket = pocket.value!.amount
+  if (props.type === TRANSACTIONS_TYPES.INPUT) {
+    return currentIndPocket + model.value.amount
+  }
+  if (props.type === TRANSACTIONS_TYPES.OUTPUT) {
+    return currentIndPocket - model.value.amount
+  }
+})
 const rules = computed(() => ({
   [TRANSACTIONS_TYPES.INPUT]: {
     amount: 'required|min_value:1,$1'
@@ -124,7 +133,7 @@ async function saveDescription () {
       autocomplete="off"
       @success="processAmount"
     >
-      <p class="mb-5 font-semibold text-center text-2xl">
+      <p class="mb-5 font-semibold text-center text-2xl" :class="typeHelp.color">
         {{ typeHelp.title }}
       </p>
       <AppSelect
@@ -147,8 +156,10 @@ async function saveDescription () {
           name="description"
           label="Motivo (opcional)"
           rules="max:200"
-          step=".01"
         />
+        <p v-show="model.amount">
+          Después de este movimiento tendrás <strong>{{ currency(amountAfter) }}</strong> en la cuenta
+        </p>
         <button class="btn btn-block btn-success mt-4">
           <span>Guardar</span>
         </button>
