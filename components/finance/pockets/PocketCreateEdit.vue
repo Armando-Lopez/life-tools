@@ -69,7 +69,7 @@ watch(financeStore.pocketToEdit, (newValue) => {
         label="¿Cuánto dinero tienes en el bolsillo?"
         name="amount"
         placeholder="$1.000.000"
-        rules="required|numeric|min_value:100,$100"
+        rules="required|min_value:1,$1"
         type="number"
       />
       <strong>{{ currency(model.amount) }}</strong>

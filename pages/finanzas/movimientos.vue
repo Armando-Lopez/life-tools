@@ -7,7 +7,9 @@ const { isLoading, getDocs } = useFirestore()
 const transactions = ref<Transaction[]>([])
 
 onMounted(async () => {
-  const { data } = await getDocs(TRANSACTIONS_PATH)
+  const { data } = await getDocs(TRANSACTIONS_PATH, {
+    orderBy: ['timestamp', 'desc']
+  })
   if (data) {
     transactions.value = data
   }

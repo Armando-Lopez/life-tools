@@ -24,9 +24,6 @@ export const useFinanceStore = defineStore('financeStore', () => {
   const totalBalance = computed<number>((): number =>
     pockets.data.reduce((acc: number, pocket: Pocket) => pocket.amount + acc, 0)
   )
-  const pocketsNames = computed(() =>
-    pockets.data.map((pocket: Pocket) => pocket.name)
-  )
   watch(showPocketModal, (newValue: Boolean) => {
     if (!newValue) {
       pocketToEdit.isSaving = false
@@ -114,7 +111,6 @@ export const useFinanceStore = defineStore('financeStore', () => {
     goals,
     pocketToEdit,
     pockets,
-    pocketsNames,
     showPocketModal,
     totalBalance,
     createGoal,

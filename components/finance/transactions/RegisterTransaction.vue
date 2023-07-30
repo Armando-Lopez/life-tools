@@ -50,10 +50,10 @@ const pocket = computed(() => pockets.value.find(p => p.id === model.value.pocke
 
 const rules = computed(() => ({
   [TRANSACTIONS_TYPES.INPUT]: {
-    amount: 'required|numeric|min_value:100,$100'
+    amount: 'required|min_value:1,$1'
   },
   [TRANSACTIONS_TYPES.OUTPUT]: {
-    amount: `required|numeric|min_value:100,$100|max_value:${pocket.value?.amount},${currency(pocket.value?.amount)}`
+    amount: `required|min_value:1,$1|max_value:${pocket.value?.amount},${currency(pocket.value?.amount)}`
   }
 }[props.type]))
 
@@ -146,7 +146,8 @@ async function saveDescription () {
         <AppTextField
           name="description"
           label="Motivo (opcional)"
-          rules="required|max:200"
+          rules="max:200"
+          step=".01"
         />
         <button class="btn btn-block btn-success mt-4">
           <span>Guardar</span>

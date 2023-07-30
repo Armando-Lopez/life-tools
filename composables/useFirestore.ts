@@ -5,11 +5,17 @@ import {
   getDocs as getFirebaseDocs, serverTimestamp,
   setDoc,
   updateDoc as updateFirebaseDoc,
-  arrayUnion
+  arrayUnion,
+  orderBy,
+  query as firebaseQuery
 } from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { generateId } from '~/helpers'
 import { useUserStore } from '~/stores/user'
+
+interface Query {
+  orderBy: Array<string>
+}
 
 export const useFirestore = () => {
   const { $db } = useNuxtApp()
@@ -75,12 +81,16 @@ export const useFirestore = () => {
     }
   }
 
-  const getDocs = async (path: string) => {
+  const getDocs = async (path: string, query?: Query) => {
     try {
       toggleLoading()
       const data = <any>[]
-      // @ts-ignore
-      const docs = await getFirebaseDocs(collection($db, `${userStore.user.email}/${path}`))
+      const docs = await getFirebaseDocs(firebaseQuery(
+        // @ts-ignore
+        collection($db, `${userStore.user.email}/${path}`),
+        // @ts-ignore
+        query?.orderBy && orderBy(...query.orderBy)
+      ))
       // @ts-ignore
       docs.forEach((doc: any) => {
         data.push({

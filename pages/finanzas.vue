@@ -14,7 +14,7 @@ onMounted(() => {
 <template>
   <main class="flex-grow flex flex-col container mx-auto pb-16">
     <div class="flex-grow relative">
-      <NuxtPage />
+      <NuxtPage keepalive />
     </div>
   </main>
   <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 container w-full finance-nav">
