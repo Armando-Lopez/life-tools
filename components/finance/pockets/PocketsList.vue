@@ -9,7 +9,7 @@ const financeStore = useFinanceStore()
   <section class="px-4">
     <div class="flex items-center gap-5 mb-4">
       <p class="text-2xl font-semibold">
-        Bolsillos
+        Cuentas
       </p>
     </div>
     <AppLoader v-if="financeStore.pockets.isLoading" class="mx-auto" />

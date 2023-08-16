@@ -1,19 +1,28 @@
 <script setup lang="ts">
+import axios from 'axios'
 import CreateTask from '~/components/tasks-tracking/CreateTask.vue'
 import { useTasksTrackingStore } from '~/stores/tasksTraking'
 import TaskCard from '~/components/tasks-tracking/TaskCard.vue'
 
 const tasksStore = useTasksTrackingStore()
-tasksStore.setCalendarAccess(true)
-
+// tasksStore.setCalendarAccess(true)
+//
 onMounted(() => {
-  tasksStore.getTasks()
+  // tasksStore.getTasks()
+  axios.get('https://homecapital.atlassian.net/rest/api/3/issue/HCE-1062/worklog', {
+    auth: {
+      username: 'd.lopez@homecapital.com.co',
+      password: 'ATATT3xFfGF07swn7oli2UsjVHNxXU1ru4A0e1-pUFUcrHHbOHtQo1KfEacHMNBT2pwV0QSHq6F-0TfA7DvQEmh2dncWXl_DaAM0BNhxy07Oi913pEcljvjQKu2Ouv7i4Vtm94N1luC1WdhEYSZ6SKHvQ-7vTYXAq4vnQAM-KRUNd5YOCe4BH_4=CE9D5A35'
+    }
+  }).then((response) => {
+    console.log(response)
+  })
 })
-const { googleAuth, requestAccess } = useGoogleAuth()
-
-function onGetAccess (token: any) {
-  console.log(token)
-}
+// const { googleAuth, requestAccess } = useGoogleAuth()
+//
+// function onGetAccess (token: any) {
+//   console.log(token)
+// }
 
 </script>
 

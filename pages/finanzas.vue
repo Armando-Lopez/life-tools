@@ -20,9 +20,9 @@ onMounted(() => {
   <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 container w-full finance-nav">
     <ul class="menu menu-horizontal overflow-hidden grid grid-cols-3 w-full p-0 bg-base-200 shadow-inner">
       <li>
-        <NuxtLink :to="{ name: 'finanzas-bolsillos' }" class="relative flex flex-col px-1 rounded-none">
+        <NuxtLink :to="{ name: 'finanzas-cuentas' }" class="relative flex flex-col px-1 rounded-none">
           <AppIcon icon="simple-icons:pocket" width="15" class="text-green-500" />
-          <span>Bolsillos</span>
+          <span>Cuentas</span>
         </NuxtLink>
       </li>
       <!--      <li>-->

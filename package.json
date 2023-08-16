@@ -38,6 +38,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.4.11",
     "@vee-validate/rules": "^4.10.3",
+    "axios": "^1.4.0",
     "dayjs": "^1.11.9",
     "firebase": "^9.22.2",
     "pinia": "^2.1.3",

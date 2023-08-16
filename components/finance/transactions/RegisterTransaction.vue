@@ -115,7 +115,7 @@ async function saveDescription () {
   <AppModal v-model="modal">
     <template v-if="!pockets.length">
       <p class="mb-2">
-        Aún tienes bolsillos. primero crea con el botón
+        Aún no tienes cuentas. primero crea con el botón
         <button
           class="btn btn-secondary btn-circle btn-sm"
           title="Crear bolsillo"
