@@ -1,18 +1,9 @@
 <script setup lang="ts">
 import { Pocket } from '~/interfaces/finance'
-import { useFinanceStore } from '~/stores/finance'
 
 const props = defineProps<{ pocket: Pocket }>()
 
-const financeStore = useFinanceStore()
 const { currency } = useFilter()
-
-async function deletePocket () {
-  const hasDeleted = await financeStore.deletePocket(props.pocket.path || null)
-  if (hasDeleted) {
-    await financeStore.getPockets()
-  }
-}
 </script>
 
 <template>

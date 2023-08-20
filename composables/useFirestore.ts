@@ -126,6 +126,7 @@ export const useFirestore = () => {
       await deleteFirebaseDoc(doc($db, path))
       return true
     } catch (err) {
+      console.error(err)
       return false
     }
   }

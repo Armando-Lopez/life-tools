@@ -90,6 +90,7 @@ async function createJiraIssueWorkLog () {
     if (!currentWorkLog.value) { return }
     const { data } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
       method: 'POST',
+      // @ts-ignore
       headers: { authorization: useState('jiraAuth').value },
       body: {
         issue: jiraIssue.value.code,
@@ -114,6 +115,7 @@ async function updateJiraIssueWorkLog () {
     if (!currentWorkLog.value?.jiraWorkLogId) { return }
     await useFetch('/api/auth/jira/issue-worklog', {
       method: 'PUT',
+      // @ts-ignore
       headers: { authorization: useState('jiraAuth').value },
       body: {
         issue: jiraIssue.value.code,
