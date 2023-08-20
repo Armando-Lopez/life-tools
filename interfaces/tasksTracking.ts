@@ -1,23 +1,26 @@
-interface Tracking {
+export interface TimeLog {
   id: string
-  start: string
-  end: string
+  meta?: any
+  startedAt: string
+  timeSpentSeconds: number
+  jiraWorkLogId?: string | number
 }
 
 export interface Task {
-  id?: string
-  lastCalendarEventId?: string
-  name?: string
+  code?: string | null
   description?: string
-  trackingSeconds?: number
-  tracking?: Array<Tracking>
+  id?: string
+  name?: string
+  meta?: any
   path?: string
+  timeLogs?: object
+  trackingSeconds?: number
 }
 
 export interface CalendarTask {
-  id?: string
-  summary?: string
   description?: string
-  start?: string
   end?: string
+  id?: string
+  start?: string
+  summary?: string
 }

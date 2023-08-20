@@ -2,20 +2,16 @@ import {
   collection,
   doc,
   getDoc as getFirebaseDoc,
-  getDocs as getFirebaseDocs, serverTimestamp,
+  getDocs as getFirebaseDocs,
   setDoc,
   updateDoc as updateFirebaseDoc,
   arrayUnion,
-  orderBy,
-  query as firebaseQuery
+  query as firebaseQuery,
+  deleteDoc as deleteFirebaseDoc
 } from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { generateId } from '~/helpers'
 import { useUserStore } from '~/stores/user'
-
-interface Query {
-  orderBy: Array<string>
-}
 
 export const useFirestore = () => {
   const { $db } = useNuxtApp()
@@ -31,7 +27,7 @@ export const useFirestore = () => {
       // @ts-ignore
       const data = {
         created: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        timestamp: serverTimestamp(),
+        updated: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         ...values
       }
       // @ts-ignore
@@ -81,17 +77,15 @@ export const useFirestore = () => {
     }
   }
 
-  const getDocs = async (path: string, query?: Query) => {
+  const getDocs = async (path: string, query: Array<any> = []) => {
     try {
       toggleLoading()
       const data = <any>[]
       const docs = await getFirebaseDocs(firebaseQuery(
         // @ts-ignore
         collection($db, `${userStore.user.email}/${path}`),
-        // @ts-ignore
-        query?.orderBy && orderBy(...query.orderBy)
+        ...query
       ))
-      // @ts-ignore
       docs.forEach((doc: any) => {
         data.push({
           ...doc.data(),
@@ -112,10 +106,10 @@ export const useFirestore = () => {
     try {
       toggleLoading()
       // @ts-ignore
-      const docRef = doc($db, `${userStore.user.email}/${path}`)
+      const docRef = doc($db, path)
       await updateFirebaseDoc(docRef, {
         ...values,
-        timestamp: serverTimestamp()
+        updated: dayjs().format('YYYY-MM-DD HH:mm:ss')
       })
       return { data: docRef, error: null }
     } catch (error) {
@@ -126,13 +120,24 @@ export const useFirestore = () => {
     }
   }
 
+  async function deleteDoc (path: string): Promise<Boolean> {
+    try {
+      if (!path) { return false }
+      await deleteFirebaseDoc(doc($db, path))
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
   return {
-    isLoading,
     addToArray: arrayUnion,
     createDoc,
     createDocOrUpdateIfExists,
+    deleteDoc,
     getDoc,
     getDocs,
+    isLoading,
     updateDoc
   }
 }

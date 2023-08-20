@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia'
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore'
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { CalendarTask, Task } from '~/interfaces/tasksTracking'
-import { generateId } from '~/helpers'
-import { useUserStore } from '~/stores/user'
+import { TRACKING_TASKS_PATH } from '~/constants/firebaseConstants'
 
 export const useTasksTrackingStore = defineStore('taskTrackingStore', () => {
   const { $db } = useNuxtApp()
-  const userStore = useUserStore()
+  const { createDoc, getDocs } = useFirestore()
+
   const tasks = reactive({
     isLoading: false,
     data: <Task[]>[]
@@ -23,11 +23,8 @@ export const useTasksTrackingStore = defineStore('taskTrackingStore', () => {
   }
   async function createTask (task: Task): Promise<Boolean> {
     try {
-      const id = generateId()
-      const taskData = { id, ...task }
-      const path = `${userStore.user.email}/tasks-tracking/tasks/${id}`
-      await setDoc(doc($db, path), taskData)
-      tasks.data.push({ ...taskData, path })
+      const { data } = await createDoc(TRACKING_TASKS_PATH, task)
+      tasks.data.push(data as Task)
       return true
     } catch (err) {
       console.error(err)
@@ -35,18 +32,12 @@ export const useTasksTrackingStore = defineStore('taskTrackingStore', () => {
     }
   }
   async function getTasks () {
-    try {
-      tasks.isLoading = true
-      const docs = await getDocs(collection($db, `${userStore.user.email}/tasks-tracking/tasks`))
-      tasks.data = []
-      docs.forEach((doc) => {
-        tasks.data.push({ ...doc.data() as Task, path: doc.ref.path })
-      })
-    } catch (err) {
-      // console.error(err)
-    } finally {
-      tasks.isLoading = false
+    tasks.isLoading = true
+    const { data } = await getDocs(TRACKING_TASKS_PATH)
+    if (data) {
+      tasks.data = data
     }
+    tasks.isLoading = false
   }
   async function updateTask (taskId: string | undefined, newData: Task) {
     if (!taskId) { return false }
@@ -95,12 +86,12 @@ export const useTasksTrackingStore = defineStore('taskTrackingStore', () => {
           colorId: 8
         }
       })
-
-      request.execute(async (event: any) => {
-        await updateTask(taskId, {
-          lastCalendarEventId: event.id
-        })
-      })
+      console.log(request)
+      // request.execute(async (event: any) => {
+      //   await updateTask(taskId, {
+      //     lastCalendarEventId: event.id
+      //   })
+      // })
     } catch (e) {
       console.error(e)
     }

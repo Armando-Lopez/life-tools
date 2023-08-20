@@ -7,11 +7,13 @@ const formRef = ref(null)
 const isModalOpen = ref(false)
 const isSaving = ref(false)
 const model = ref<Task>({
-  lastCalendarEventId: '',
   name: '',
+  meta: {
+    code: null
+  },
   description: '',
   trackingSeconds: 0,
-  tracking: []
+  workLogs: {}
 })
 
 async function saveTask () {
@@ -21,6 +23,7 @@ async function saveTask () {
   if (hasSave) {
     isModalOpen.value = false
   }
+  tasksStore.getTasks()
 }
 
 watch(isModalOpen, (newValue) => {
@@ -32,7 +35,7 @@ watch(isModalOpen, (newValue) => {
 
 <template>
   <button class="fixed bottom-3 right-3 z-10 btn btn-success btn-circle" @click="isModalOpen = true">
-    <AppIcon icon="ic:round-plus" width="40px" />
+    <AppIcon icon="ic:round-plus" width="40px" class="text-white" />
   </button>
   <AppModal v-model="isModalOpen">
     <AppForm
@@ -49,6 +52,11 @@ watch(isModalOpen, (newValue) => {
         label="Nombre"
         name="name"
         rules="required|max:100"
+      />
+      <AppTextField
+        label="Código"
+        name="meta.code"
+        rules="required|max:10"
       />
       <AppTextArea
         label="Descripción"

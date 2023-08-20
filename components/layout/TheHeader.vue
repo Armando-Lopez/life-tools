@@ -5,7 +5,7 @@ const { $auth } = useNuxtApp()
 </script>
 
 <template>
-  <header class="sticky top-0 z-10 navbar bg-base-100 shadow">
+  <header class="navbar sticky top-0 z-10 mb-4 bg-base-200 shadow">
     <div class="container mx-auto">
       <div class="flex-1">
         <NuxtLink to="/" class="flex items-center gap-2">

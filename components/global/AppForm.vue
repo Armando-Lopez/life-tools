@@ -11,7 +11,7 @@ const inputsBindings = reactive<any>({})
 
 const {
   values, errors, handleSubmit, isSubmitting, isValidating,
-  defineInputBinds, setValues, setFieldValue, resetForm
+  defineInputBinds, setValues, setFieldValue, resetForm, validate
 } = useForm({
   initialValues: props.modelValue,
   validationSchema
@@ -39,7 +39,7 @@ watch(values, (newValue) => {
   emit('update:modelValue', newValue)
 }, { deep: true })
 
-defineExpose({ setValues, setFieldValue, resetForm })
+defineExpose({ setValues, setFieldValue, resetForm, validate })
 provide('appForm', { errors, inputsBindings, registerInput, setRules })
 </script>
 
