@@ -14,6 +14,7 @@ stop()
 const jiraIssue = ref<Task>(props.issue)
 const currentWorkLog = ref<TimeLog|null>(null)
 const updateWorkLogInterval = 60
+const jiraSettings = useState('jiraSettings')
 
 const timeSpentSeconds = computed<number>((): number => {
   let totalTimeSeconds = 0
@@ -38,6 +39,8 @@ function handleTracking () {
     currentWorkLog.value.timeSpentSeconds = now().diff(now(currentWorkLog.value.startedAt), 'seconds')
     if (currentWorkLog.value.timeSpentSeconds % updateWorkLogInterval === 0) {
       updateWorkLog()
+    }
+    if (currentWorkLog.value.timeSpentSeconds % jiraSettings.value.jiraUpdateIntervalInSeconds === 0) {
       if (currentWorkLog.value.jiraWorkLogId) {
         updateJiraIssueWorkLog()
       } else {

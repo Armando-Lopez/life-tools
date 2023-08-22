@@ -5,7 +5,7 @@ const props = defineProps({
   isLoading: { type: Boolean, default: false },
   initialValues: { type: Object, default: () => ({}) }
 })
-const emit = defineEmits(['update:modelValue', 'success', 'error'])
+const emit = defineEmits(['update:modelValue', 'onUpdate', 'success', 'error'])
 const validationSchema = reactive<any>({})
 const inputsBindings = reactive<any>({})
 
@@ -37,6 +37,7 @@ watch(props.modelValue, (newValue) => {
 }, { immediate: true, deep: true })
 watch(values, (newValue) => {
   emit('update:modelValue', newValue)
+  emit('onUpdate', newValue)
 }, { deep: true })
 
 defineExpose({ setValues, setFieldValue, resetForm, validate })

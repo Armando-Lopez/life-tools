@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Task } from '~/interfaces/tasksTracking'
-import { TRACKING_JIRA_TASKS_PATH } from '~/constants/firebaseConstants'
+import { TRACKING_JIRA_PATH } from '~/constants/firebaseConstants'
 
 const { createDoc, isLoading } = useFirestore()
 const emit = defineEmits(['onCreateJiraTask'])
@@ -14,7 +14,7 @@ const model = ref<Task>({
 })
 
 async function save () {
-  const { data } = await createDoc(TRACKING_JIRA_TASKS_PATH, model.value)
+  const { data } = await createDoc(TRACKING_JIRA_PATH, model.value)
   if (data) {
     emit('onCreateJiraTask', data)
     isModalOpen.value = false

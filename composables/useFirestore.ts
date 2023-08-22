@@ -4,7 +4,6 @@ import {
   getDoc as getFirebaseDoc,
   getDocs as getFirebaseDocs,
   setDoc,
-  updateDoc as updateFirebaseDoc,
   arrayUnion,
   query as firebaseQuery,
   deleteDoc as deleteFirebaseDoc
@@ -107,10 +106,10 @@ export const useFirestore = () => {
       toggleLoading()
       // @ts-ignore
       const docRef = doc($db, path)
-      await updateFirebaseDoc(docRef, {
+      await setDoc(docRef, {
         ...values,
         updated: dayjs().format('YYYY-MM-DD HH:mm:ss')
-      })
+      }, { merge: true })
       return { data: docRef, error: null }
     } catch (error) {
       console.error(error)

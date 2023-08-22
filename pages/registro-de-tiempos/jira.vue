@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { orderBy, where } from 'firebase/firestore'
 import { Task } from '~/interfaces/tasksTracking'
-import { APPS_INTEGRATIONS_PATH, TRACKING_JIRA_TASKS_PATH } from '~/constants/firebaseConstants'
+import { APPS_INTEGRATIONS_PATH, TRACKING_JIRA_PATH } from '~/constants/firebaseConstants'
 import JiraIssueCard from '~/components/tasks-tracking/jira/JiraIssueCard.vue'
 import RequestJiraAuth from '~/components/tasks-tracking/jira/RequestJiraAuth.vue'
 import CreateJiraIssue from '~/components/tasks-tracking/jira/CreateJiraIssue.vue'
+import JiraSettings from '~/components/tasks-tracking/jira/JiraSettings.vue'
 definePageMeta({ middleware: 'auth' })
 
 const { getDocs, isLoading } = useFirestore()
@@ -31,7 +32,7 @@ async function getJiraAuthCredentials () {
 }
 
 async function getJiraTasks () {
-  const { data } = await getDocs(TRACKING_JIRA_TASKS_PATH, [
+  const { data } = await getDocs(TRACKING_JIRA_PATH, [
     orderBy('created', 'desc')
   ])
   if (data) {
@@ -46,7 +47,7 @@ function removeIssue (issue: Task) {
 
 <template>
   <main class="container mx-auto px-4">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center">
       <div class="breadcrumbs text-neutral">
         <ul>
           <li>
@@ -57,9 +58,12 @@ function removeIssue (issue: Task) {
           <li><a>JIRA</a></li>
         </ul>
       </div>
-      <CreateJiraIssue v-if="!requestJiraAuthModal" @on-create-jira-task="getJiraTasks()" />
+      <JiraSettings />
     </div>
     <section>
+      <div class="my-4">
+        <CreateJiraIssue v-if="!requestJiraAuthModal" @on-create-jira-task="getJiraTasks()" />
+      </div>
       <AppLoader v-if="isLoading" class="mx-auto mt-40" />
       <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg: gap-4">
         <li v-for="issue in jiraIssues" :key="issue.id">
