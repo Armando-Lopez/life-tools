@@ -26,7 +26,7 @@ async function checkJiraConnection () {
     })
     hasSuccessAuth.value = !!data.value?.accountId
     if (hasSuccessAuth.value) {
-      await saveCredentials()
+      await saveCredentials(data.value.accountId)
     }
   } catch (e) {
     hasSuccessAuth.value = false
@@ -34,7 +34,7 @@ async function checkJiraConnection () {
     isValidating.value = false
   }
 }
-async function saveCredentials () {
+async function saveCredentials (accountId: string) {
   const { data: authToken } = await useFetch('/api/buffer-token', {
     method: 'POST',
     body: {
@@ -44,7 +44,8 @@ async function saveCredentials () {
   })
   const { data } = await createDoc(APPS_INTEGRATIONS_PATH, {
     name: 'JIRA',
-    auth: authToken.value
+    auth: authToken.value,
+    accountId
   })
   if (data) {
     emit('onSaveCredentials')

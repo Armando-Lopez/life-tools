@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Task, TimeLog } from '~/interfaces/tasksTracking'
 import { generateId } from '~/helpers'
-import { JIRA_ISSUE_URL_API, JIRA_ISSUE_WORK_LOG_URL_API } from '~/constants/api'
+import { JIRA_ISSUE_WORK_LOG_URL_API } from '~/constants/api'
+import JiraIssueDetails from '~/components/tasks-tracking/jira/JiraIssueDetails.vue'
 
 const props = defineProps<{ issue: Task }>()
 const emit = defineEmits(['onDeleted'])
@@ -11,10 +12,11 @@ const { now } = useTime()
 const { isPending: isTracking, start, stop } = useTimeoutFn(handleTracking, 1000)
 stop()
 
+const jiraSettings = useState('jiraSettings')
 const jiraIssue = ref<Task>(props.issue)
+const jiraIssueUpdateCount = ref<number>(0)
 const currentWorkLog = ref<TimeLog|null>(null)
 const updateWorkLogInterval = 60
-const jiraSettings = useState('jiraSettings')
 
 const timeSpentSeconds = computed<number>((): number => {
   let totalTimeSeconds = 0
@@ -23,15 +25,6 @@ const timeSpentSeconds = computed<number>((): number => {
     totalTimeSeconds += jiraIssue.value.timeLogs[logItem].timeSpentSeconds
   }
   return totalTimeSeconds
-})
-
-const { execute: getJiraIssue } = await useFetch(JIRA_ISSUE_URL_API, {
-  lazy: true,
-  server: false,
-  immediate: false,
-  // @ts-ignore
-  headers: { authorization: useState('jiraAuth').value },
-  query: { issueCode: jiraIssue.value.code }
 })
 
 function handleTracking () {
@@ -87,7 +80,6 @@ async function updateWorkLog () {
     }
   }
 }
-
 async function createJiraIssueWorkLog () {
   try {
     if (!currentWorkLog.value) { return }
@@ -116,7 +108,7 @@ async function createJiraIssueWorkLog () {
 async function updateJiraIssueWorkLog () {
   try {
     if (!currentWorkLog.value?.jiraWorkLogId) { return }
-    await useFetch('/api/auth/jira/issue-worklog', {
+    await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
       method: 'PUT',
       // @ts-ignore
       headers: { authorization: useState('jiraAuth').value },
@@ -127,6 +119,7 @@ async function updateJiraIssueWorkLog () {
         workLogId: currentWorkLog.value.jiraWorkLogId
       }
     })
+    jiraIssueUpdateCount.value++
   } catch (e) {
     console.error(e)
   }
@@ -152,25 +145,20 @@ async function confirmDelete () {
 
 <template>
   <AppCard class="max-w-none">
-    <div class="flex flex-wrap items-center justify-between">
+    <div class="flex items-center justify-between">
       <h2 class="card-title">
         {{ jiraIssue.code }}
       </h2>
-      <div>
-        <AppDropdown>
-          <template #activator>
-            <AppIcon icon="simple-line-icons:options" width="25" />
-          </template>
-          <button class="flex" @click="confirmDelete">
-            <AppIcon icon="material-symbols:delete" width="30" class="text-red-500" />
-          </button>
-        </AppDropdown>
-      </div>
-      <p class="w-full line-clamp-1">
-        {{ jiraIssue.description }}
-      </p>
+      <AppDropdown>
+        <template #activator>
+          <AppIcon icon="simple-line-icons:options" width="25" />
+        </template>
+        <button class="flex" @click="confirmDelete">
+          <AppIcon icon="material-symbols:delete" width="30" class="text-red-500" />
+        </button>
+      </AppDropdown>
     </div>
-    <div class="flex items-center justify-between gap-4">
+    <div class="flex items-center justify-between gap-4 mb-2">
       <div>
         <button v-if="!isTracking" title="Empezar nuevo registro" @click="startTracking">
           <AppIcon icon="solar:play-bold" width="30" class="text-green-500" />
@@ -179,12 +167,8 @@ async function confirmDelete () {
           <AppIcon icon="solar:stop-bold" width="30" class="text-orange-600" />
         </button>
       </div>
-      <AppCountdown :seconds="timeSpentSeconds" />
+      <AppCountdown :seconds="timeSpentSeconds" class="text-2xl" />
     </div>
-    <div>
-      <button @click="getJiraIssue">
-        <AppIcon icon="tabler:calendar-stats" width="30" class="text-info" />
-      </button>
-    </div>
+    <JiraIssueDetails :issue="jiraIssue" :jira-issue-update-count="jiraIssueUpdateCount" />
   </AppCard>
 </template>

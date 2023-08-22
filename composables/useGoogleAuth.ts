@@ -23,7 +23,6 @@ export const useGoogleAuth = () => {
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback (response: any) {
-        console.log(response)
         cb?.(response)
       }
     })
@@ -35,7 +34,6 @@ export const useGoogleAuth = () => {
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback (response: any) {
-        console.log(response.refresh_token)
         cb?.(response)
       }
     })

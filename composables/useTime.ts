@@ -22,9 +22,24 @@ export const useTime = () => {
     }
   }
 
+  function textTimeToSeconds (text: string): number {
+    const daysMatch = text.match(/(\d+)d/)
+    const hoursMatch = text.match(/(\d+)h/)
+    const minutesMatch = text.match(/(\d+)m/)
+    const secondsMatch = text.match(/(\d+)s/)
+
+    const days = daysMatch ? parseInt(daysMatch[1], 10) : 0
+    const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : 0
+    const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0
+    const seconds = secondsMatch ? parseInt(secondsMatch[1], 10) : 0
+
+    return (days * 24 * 3600) + (hours * 3600) + (minutes * 60) + seconds
+  }
+
   return {
     now: dayjs,
+    duration,
     formatTime,
-    duration
+    textTimeToSeconds
   }
 }

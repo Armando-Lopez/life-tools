@@ -6,7 +6,8 @@ import {
   setDoc,
   arrayUnion,
   query as firebaseQuery,
-  deleteDoc as deleteFirebaseDoc
+  deleteDoc as deleteFirebaseDoc,
+  updateDoc as updateFirebaseDoc
 } from 'firebase/firestore'
 import dayjs from 'dayjs'
 import { generateId } from '~/helpers'
@@ -30,8 +31,9 @@ export const useFirestore = () => {
         ...values
       }
       // @ts-ignore
-      await setDoc(doc($db, `${userStore.user.email}/${path}/${id}`), data)
-      return { data: { ...data, id }, error: null }
+      const fullPath = `${userStore.user.email}/${path}/${id}`
+      await setDoc(doc($db, fullPath), data)
+      return { data: { ...data, id, path: fullPath }, error: null }
     } catch (error) {
       console.error(error)
       return { error, data: null }
@@ -106,10 +108,10 @@ export const useFirestore = () => {
       toggleLoading()
       // @ts-ignore
       const docRef = doc($db, path)
-      await setDoc(docRef, {
+      await updateFirebaseDoc(docRef, {
         ...values,
         updated: dayjs().format('YYYY-MM-DD HH:mm:ss')
-      }, { merge: true })
+      })
       return { data: docRef, error: null }
     } catch (error) {
       console.error(error)

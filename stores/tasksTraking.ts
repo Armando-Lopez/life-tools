@@ -86,7 +86,6 @@ export const useTasksTrackingStore = defineStore('taskTrackingStore', () => {
           colorId: 8
         }
       })
-      console.log(request)
       // request.execute(async (event: any) => {
       //   await updateTask(taskId, {
       //     lastCalendarEventId: event.id

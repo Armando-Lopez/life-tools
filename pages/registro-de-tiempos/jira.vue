@@ -13,6 +13,7 @@ const { getDocs, isLoading } = useFirestore()
 const jiraIssues = useState<Task[]>('jiraIssues', () => [])
 
 const jiraAuth = useState('jiraAuth', () => '')
+const jiraUserId = useState('jiraUserId', () => '')
 const requestJiraAuthModal = ref(false)
 
 onMounted(() => {
@@ -27,6 +28,7 @@ async function getJiraAuthCredentials () {
     requestJiraAuthModal.value = true
   } else {
     jiraAuth.value = response.data[0].auth
+    jiraUserId.value = response.data[0].accountId
     await getJiraTasks()
   }
 }

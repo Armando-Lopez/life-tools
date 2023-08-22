@@ -1,7 +1,15 @@
 <script setup lang="ts">
+const emit = defineEmits(['onOpen', 'onClose'])
+
 const isActive = ref(false)
+
 function toggle () {
   isActive.value = !isActive.value
+  if (isActive.value) {
+    emit('onOpen')
+  } else {
+    emit('onClose')
+  }
 }
 </script>
 
