@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { Task, TimeLog } from '~/interfaces/tasksTracking'
 import { generateId } from '~/helpers'
-import { JIRA_ISSUE_WORK_LOG_URL_API } from '~/constants/api'
+import {
+  JIRA_ISSUE_TRANSITION_URL_API,
+  JIRA_ISSUE_TRANSITIONS_URL_API,
+  JIRA_ISSUE_WORK_LOG_URL_API
+} from '~/constants/api'
 import JiraIssueDetails from '~/components/tasks-tracking/jira/JiraIssueDetails.vue'
 
 const props = defineProps<{ issue: Task }>()
@@ -46,6 +50,9 @@ function handleTracking () {
 function startTracking () {
   if (!currentWorkLog.value) {
     createTimeLog()
+  }
+  if (jiraSettings.value.autoMoveIssueToProgress) {
+    updateJiraIssueStatus()
   }
   start()
 }
@@ -120,6 +127,32 @@ async function updateJiraIssueWorkLog () {
       }
     })
     jiraIssueUpdateCount.value++
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+async function updateJiraIssueStatus () {
+  try {
+    const { data: issueTransitions } = await useFetch(JIRA_ISSUE_TRANSITIONS_URL_API, {
+      // @ts-ignore
+      headers: { authorization: useState('jiraAuth').value },
+      server: false,
+      query: { issueCode: jiraIssue.value.code }
+    })
+    if (!issueTransitions.value?.length) {
+      return
+    }
+    const progressStatus = issueTransitions.value.find((p: any) => p.code === 'IN_PROGRESS')
+    if (!progressStatus) {
+      return
+    }
+    await useFetch(JIRA_ISSUE_TRANSITION_URL_API, {
+      // @ts-ignore
+      headers: { authorization: useState('jiraAuth').value },
+      method: 'POST',
+      body: { issueCode: jiraIssue.value.code, toStatusId: progressStatus.id }
+    })
   } catch (e) {
     console.error(e)
   }

@@ -16,9 +16,11 @@ const jiraIssueUpdateIntervalInSeconds = [
 ]
 
 const jiraSettings = useState('jiraSettings', () => ({
+  autoMoveIssueToProgress: false,
   jiraUpdateIntervalInSeconds: jiraIssueUpdateIntervalInSeconds[0].value,
   path: ''
 }))
+const formRef = ref(null)
 
 onMounted(() => {
   getSettings()
@@ -26,8 +28,8 @@ onMounted(() => {
 
 async function getSettings () {
   const { data = {} } = await getDoc(SETTINGS_PATH)
-  jiraSettings.value.jiraUpdateIntervalInSeconds =
-    data?.jiraUpdateIntervalInSeconds || jiraSettings.value.jiraUpdateIntervalInSeconds
+  jiraSettings.value.autoMoveIssueToProgress = data?.autoMoveIssueToProgress || jiraSettings.value.autoMoveIssueToProgress
+  jiraSettings.value.jiraUpdateIntervalInSeconds = data?.jiraUpdateIntervalInSeconds || jiraSettings.value.jiraUpdateIntervalInSeconds
   jiraSettings.value.path = data?.path || ''
 }
 
@@ -41,14 +43,15 @@ async function saveSettings () {
 <template>
   <AppModal>
     <template #activator="{ toggle }">
-      <button title="configuraciones" @click="toggle">
-        <AppIcon icon="fluent:settings-28-filled" width="30" />
+      <button title="Ajustes" class="btn btn-sm" @click="toggle">
+        <AppIcon icon="fluent:settings-28-filled" width="20" />
+        <span class="hidden md:block">Ajustes</span>
       </button>
     </template>
     <p class="text-lg font-bold">
-      Configuraciones
+      Ajustes
     </p>
-    <AppForm v-model="jiraSettings" @on-update="saveSettings">
+    <AppForm ref="formRef" v-model="jiraSettings" class="grid gap-4" @on-update="saveSettings">
       <AppSelect
         name="jiraUpdateIntervalInSeconds"
         :items="jiraIssueUpdateIntervalInSeconds"
@@ -56,6 +59,18 @@ async function saveSettings () {
         item-text="text"
         item-value="value"
       />
+      <div class="flex items-center gap-2">
+        <input
+          id="move"
+          type="checkbox"
+          class="toggle toggle-md toggle-primary"
+          :checked="jiraSettings.autoMoveIssueToProgress"
+          @change="formRef.setFieldValue('autoMoveIssueToProgress', $event.target.checked)"
+        >
+        <label for="move" class="cursor-pointer">
+          Al iniciar el conteo, mover la insidencia a <strong class="text-secondary">En curso</strong>
+        </label>
+      </div>
     </AppForm>
   </AppModal>
 </template>
