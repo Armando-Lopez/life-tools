@@ -10,7 +10,7 @@ definePageMeta({ middleware: 'auth' })
 
 const { getDocs, isLoading } = useFirestore()
 
-const jiraIssues = useState<Task[]>('jiraIssues', () => [])
+const jiraIssues = useJiraIssues()
 
 const jiraAuth = useState('jiraAuth', () => '')
 const jiraUserId = useState('jiraUserId', () => '')
@@ -41,9 +41,11 @@ async function getJiraTasks () {
     jiraIssues.value = data
   }
 }
-
+function addJiraIssue (issue: Task) {
+  jiraIssues.value.unshift(issue)
+}
 function removeIssue (issue: Task) {
-  jiraIssues.value = jiraIssues.value.filter(t => t.id !== issue.id)
+  jiraIssues.value = jiraIssues.value.filter((t: any) => t.id !== issue.id)
 }
 </script>
 
@@ -64,7 +66,7 @@ function removeIssue (issue: Task) {
     </div>
     <section>
       <div class="my-4">
-        <CreateJiraIssue v-if="!requestJiraAuthModal" @on-create-jira-task="getJiraTasks()" />
+        <CreateJiraIssue v-if="!requestJiraAuthModal" @on-create-jira-issue="addJiraIssue($event)" />
       </div>
       <AppLoader v-if="isLoading" class="mx-auto mt-40" />
       <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg: gap-4">

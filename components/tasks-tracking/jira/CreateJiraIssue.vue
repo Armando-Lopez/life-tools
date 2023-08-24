@@ -3,12 +3,12 @@ import { Task } from '~/interfaces/tasksTracking'
 import { TRACKING_JIRA_PATH } from '~/constants/firebaseConstants'
 import { JIRA_ISSUE_URL_API, JIRA_ISSUE_WORK_LOG_URL_API } from '~/constants/api'
 
-const { createDoc, updateDoc, isLoading } = useFirestore()
-const emit = defineEmits(['onCreateJiraTask'])
+const { createDoc, updateDoc } = useFirestore()
+const emit = defineEmits(['onCreateJiraIssue'])
 
 const formRef = ref(null)
 const isModalOpen = ref(false)
-const isValidatingIssue = ref(false)
+const isLoading = ref(false)
 const isInvalidIssue = ref(false)
 const model = ref<Task>({
   code: null,
@@ -16,8 +16,21 @@ const model = ref<Task>({
   timeLogs: {}
 })
 
-async function validateJiraIssueExists () {
-  isValidatingIssue.value = true
+async function handleIssueCreation () {
+  try {
+    isLoading.value = true
+    const issueFromJira = await getIssueDataFromJira()
+    if (issueFromJira) {
+      await saveIssueTracker(issueFromJira)
+    }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function getIssueDataFromJira () {
   isInvalidIssue.value = false
   const { data } = await useFetch(JIRA_ISSUE_URL_API, {
     server: false,
@@ -25,30 +38,31 @@ async function validateJiraIssueExists () {
     headers: { authorization: useState('jiraAuth').value },
     query: { issueCode: model.value.code }
   })
-  if (data.value?.id) {
-    await save()
+  if (data.value) {
+    return data.value
   } else {
     isInvalidIssue.value = true
+    return null
   }
-  isValidatingIssue.value = false
 }
 
-async function save () {
+async function saveIssueTracker (issueData: Object) {
   const { data } = await createDoc(TRACKING_JIRA_PATH, model.value)
   if (data) {
-    await getJiraIssueWorkLogs(data)
-    emit('onCreateJiraTask', data)
+    emit('onCreateJiraIssue', {
+      ...data,
+      meta: issueData
+    })
     isModalOpen.value = false
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getJiraIssueWorkLogs (saveData: object) {
   const { data } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
     // @ts-ignore
     headers: { authorization: useState('jiraAuth').value },
-    query: {
-      issue: model.value.code
-    }
+    query: { issue: model.value.code }
   })
   const timeLogs = {};
   (data.value?.worklogs || []).forEach((log: any) => {
@@ -93,20 +107,26 @@ watch(isModalOpen, (newValue) => {
       ref="formRef"
       v-model="model"
       autocomplete="off"
-      :is-loading="isLoading || isValidatingIssue"
-      @success="validateJiraIssueExists"
+      :is-loading="isLoading"
+      @success="handleIssueCreation"
       @on-update="isInvalidIssue = false"
     >
       <AppTextField
         label="Código de insidencia JIRA"
         name="code"
-        rules="required|max:10"
+        rules="required"
       />
-      <p v-if="isInvalidIssue" class="text-error">
+      <AppTextField
+        label="Description"
+        name="description"
+        rules="required|max:200"
+      />
+      <span v-if="isInvalidIssue" class="text-error">
         No se pudo vincular la insidencia <strong>{{ model.code }}</strong> o no existe
-      </p>
+      </span>
       <button class="btn btn-block btn-success mt-4">
         <span>Guardar</span>
+        <span v-show="isLoading" class="loading loading-spinner" />
       </button>
     </AppForm>
   </AppModal>

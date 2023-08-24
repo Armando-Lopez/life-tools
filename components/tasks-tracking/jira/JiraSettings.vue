@@ -28,9 +28,11 @@ onMounted(() => {
 
 async function getSettings () {
   const { data = {} } = await getDoc(SETTINGS_PATH)
-  jiraSettings.value.autoMoveIssueToProgress = data?.autoMoveIssueToProgress || jiraSettings.value.autoMoveIssueToProgress
-  jiraSettings.value.jiraUpdateIntervalInSeconds = data?.jiraUpdateIntervalInSeconds || jiraSettings.value.jiraUpdateIntervalInSeconds
-  jiraSettings.value.path = data?.path || ''
+  formRef.value.setValues({
+    autoMoveIssueToProgress: data?.autoMoveIssueToProgress || jiraSettings.value.autoMoveIssueToProgress,
+    jiraUpdateIntervalInSeconds: data?.jiraUpdateIntervalInSeconds || jiraSettings.value.jiraUpdateIntervalInSeconds,
+    path: data?.path || ''
+  })
 }
 
 async function saveSettings () {

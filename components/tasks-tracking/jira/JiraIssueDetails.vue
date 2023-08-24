@@ -48,18 +48,18 @@ watch(() => props.jiraIssueUpdateCount, () => {
       </template>
       <AppLoader v-if="pending" class="mt-3 mx-auto scale-75" />
       <div v-else-if="data">
-        <p class="mb-3 line-clamp-1" :title="data.fields.summary">
-          {{ data.fields.summary }}
+        <p class="mb-3 line-clamp-1" :title="data.summary">
+          {{ data.summary }}
         </p>
         <div class="flex items-center gap-2 mb-3">
-          <img :src="data.fields.issuetype.iconUrl" :alt="data.fields.issuetype.name" width="16">
-          <span>{{ data.fields.issuetype.name }}</span>
+          <img :src="data.issueTypeIconUrl" :alt="data.issueTypeName" width="16">
+          <span>{{ data.issueTypeName }}</span>
           -
-          <img :src="data.fields.priority.iconUrl" :alt="data.fields.priority.name" width="16">
-          <span>{{ data.fields.priority.name }}</span>
+          <img :src="data.priorityIconUrl" :alt="data.priorityName" width="16">
+          <span>{{ data.priorityName }}</span>
           -
-          <div class="w-4 h-4 rounded-md" :style="{ background: data.fields.status.statusCategory.colorName }" />
-          <span>{{ data.fields.status.name }}</span>
+          <div class="w-4 h-4 rounded-md" :style="{ background: data.statusCategoryColor }" />
+          <span>{{ data.statusName }}</span>
         </div>
         <div>
           <!--          {{ data.fields.timetracking }}-->
@@ -69,8 +69,8 @@ watch(() => props.jiraIssueUpdateCount, () => {
             </p>
             <div class="col-span-3 ml-auto">
               <AppCountdown
-                v-if="data.fields.timetracking.originalEstimate"
-                :seconds="textTimeToSeconds(data.fields.timetracking.originalEstimate)"
+                v-if="data.originalEstimate"
+                :seconds="textTimeToSeconds(data.originalEstimate)"
                 class="text-lg"
               />
               <p v-else class="flex items-center gap-2">
@@ -79,22 +79,22 @@ watch(() => props.jiraIssueUpdateCount, () => {
               </p>
             </div>
           </div>
-          <div class="mb-2 grid grid-cols-4 gap-2">
-            <p class="col-span-1">
-              Tiempo restante:
-            </p>
-            <div class="col-span-3 ml-auto">
-              <AppCountdown
-                v-if="data.fields.timetracking.originalEstimate"
-                :seconds="textTimeToSeconds(data.fields.timetracking.remainingEstimate)"
-                class="text-lg"
-              />
-              <p v-else class="flex items-center gap-2">
-                <AppIcon icon="emojione-v1:warning" width="16" />
-                <strong>Sin estimación</strong>
-              </p>
-            </div>
-          </div>
+          <!--          <div class="mb-2 grid grid-cols-4 gap-2">-->
+          <!--            <p class="col-span-1">-->
+          <!--              Tiempo restante:-->
+          <!--            </p>-->
+          <!--            <div class="col-span-3 ml-auto">-->
+          <!--              <AppCountdown-->
+          <!--                v-if="data.fields.timetracking.originalEstimate"-->
+          <!--                :seconds="textTimeToSeconds(data.fields.timetracking.remainingEstimate)"-->
+          <!--                class="text-lg"-->
+          <!--              />-->
+          <!--              <p v-else class="flex items-center gap-2">-->
+          <!--                <AppIcon icon="emojione-v1:warning" width="16" />-->
+          <!--                <strong>Sin estimación</strong>-->
+          <!--              </p>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </div>
       </div>
     </AppAccordion>

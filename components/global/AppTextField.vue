@@ -6,7 +6,8 @@ const props = defineProps({
   type: { type: String, default: 'text' },
   placeholder: { type: String, default: '' },
   label: { type: String, default: '' },
-  rules: { type: String, default: '' }
+  rules: { type: String, default: '' },
+  errorMessage: { type: String, default: '' }
 })
 
 const { formContext, error, isRequired } = useFormField({
@@ -33,7 +34,7 @@ const { formContext, error, isRequired } = useFormField({
       :class="{ 'input-error': !!error }"
     >
     <label :for="props.name" class="label">
-      <span class="label-text-alt text-error">{{ error }}</span>
+      <span class="label-text-alt text-error">{{ error || props.errorMessage }}</span>
     </label>
   </div>
 </template>

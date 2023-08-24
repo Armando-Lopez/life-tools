@@ -1,6 +1,6 @@
 export const WORK_SPACES = [
   {
-    isActive: true,
+    isActive: false,
     id: 'finance',
     routeName: 'finanzas-cuentas',
     name: 'Mis finanzas',

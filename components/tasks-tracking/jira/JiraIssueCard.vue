@@ -191,6 +191,7 @@ async function confirmDelete () {
         </button>
       </AppDropdown>
     </div>
+    <p class="line-clamp-1">{{ jiraIssue.description }}</p>
     <div class="flex items-center justify-between gap-4 mb-2">
       <div>
         <button v-if="!isTracking" title="Empezar nuevo registro" @click="startTracking">
