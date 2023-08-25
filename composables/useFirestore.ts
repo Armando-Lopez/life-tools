@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs'
 import { generateId } from '~/helpers'
 import { useUserStore } from '~/stores/user'
+import { Task } from '~/interfaces/tasksTracking'
 
 export const useFirestore = () => {
   const { $db } = useNuxtApp()
@@ -103,8 +104,9 @@ export const useFirestore = () => {
     }
   }
 
-  const updateDoc = async (path: string, values: object) => {
+  const updateDoc = async (path: string | undefined, values: Task) => {
     try {
+      if (!path) { return { error: 'No path', data: null } }
       toggleLoading()
       // @ts-ignore
       const docRef = doc($db, path)

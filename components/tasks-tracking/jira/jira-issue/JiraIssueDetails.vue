@@ -7,10 +7,6 @@ const props = defineProps({
   issue: {
     type: Object as PropType<Task>,
     required: true
-  },
-  jiraIssueUpdateCount: {
-    type: Number,
-    required: true
   }
 })
 
@@ -29,12 +25,6 @@ function handleGetData () {
     getJiraIssueDetails()
   }
 }
-
-watch(() => props.jiraIssueUpdateCount, () => {
-  if (data.value) {
-    getJiraIssueDetails()
-  }
-})
 </script>
 
 <template>
@@ -63,7 +53,7 @@ watch(() => props.jiraIssueUpdateCount, () => {
         </div>
         <div>
           <!--          {{ data.fields.timetracking }}-->
-          <div class="mb-2 grid grid-cols-4 gap-2">
+          <div class="mb-2 grid items-center grid-cols-4 gap-2">
             <p class="col-span-1">
               Tiempo estimado:
             </p>
@@ -81,7 +71,7 @@ watch(() => props.jiraIssueUpdateCount, () => {
           </div>
           <!--          <div class="mb-2 grid grid-cols-4 gap-2">-->
           <!--            <p class="col-span-1">-->
-          <!--              Tiempo restante:-->
+          <!--              Tiempo regitrado:-->
           <!--            </p>-->
           <!--            <div class="col-span-3 ml-auto">-->
           <!--              <AppCountdown-->

@@ -46,7 +46,7 @@ async function saveSettings () {
   <AppModal>
     <template #activator="{ toggle }">
       <button title="Ajustes" class="btn btn-sm" @click="toggle">
-        <AppIcon icon="fluent:settings-28-filled" width="20" />
+        <AppIcon icon="fluent:settings-28-filled" width="25" />
         <span class="hidden md:block">Ajustes</span>
       </button>
     </template>
@@ -70,7 +70,7 @@ async function saveSettings () {
           @change="formRef.setFieldValue('autoMoveIssueToProgress', $event.target.checked)"
         >
         <label for="move" class="cursor-pointer">
-          Al iniciar el conteo, mover la insidencia a <strong class="text-secondary">En curso</strong>
+          Mover la insidencia a <strong class="text-secondary">En curso</strong> al iniciar el conteo
         </label>
       </div>
     </AppForm>

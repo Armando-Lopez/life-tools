@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import { Task, TimeLog } from '~/interfaces/tasksTracking'
-import { generateId } from '~/helpers'
 import {
   JIRA_ISSUE_TRANSITION_URL_API,
   JIRA_ISSUE_TRANSITIONS_URL_API,
   JIRA_ISSUE_WORK_LOG_URL_API
 } from '~/constants/api'
-import JiraIssueDetails from '~/components/tasks-tracking/jira/JiraIssueDetails.vue'
+import { generateId } from '~/helpers'
 
-const props = defineProps<{ issue: Task }>()
-const emit = defineEmits(['onDeleted'])
-
-const { updateDoc, deleteDoc } = useFirestore()
+const { updateDoc } = useFirestore()
 const { now } = useTime()
-const { isPending: isTracking, start, stop } = useTimeoutFn(handleTracking, 1000)
-stop()
 
+const props = defineProps({
+  issue: {
+    type: Object as PropType<Task>,
+    required: true
+  }
+})
+
+const updateWorkLogInterval = 60
+const currentWorkLog = ref<TimeLog|null>(null)
 const jiraSettings = useState('jiraSettings')
 const jiraIssue = ref<Task>(props.issue)
-const jiraIssueUpdateCount = ref<number>(0)
-const currentWorkLog = ref<TimeLog|null>(null)
-const updateWorkLogInterval = 60
 
 const timeSpentSeconds = computed<number>((): number => {
   let totalTimeSeconds = 0
@@ -31,6 +31,8 @@ const timeSpentSeconds = computed<number>((): number => {
   return totalTimeSeconds
 })
 
+const { isPending: isTracking, start, stop } = useTimeoutFn(handleTracking, 1000)
+stop()
 function handleTracking () {
   if (currentWorkLog.value) {
     currentWorkLog.value.timeSpentSeconds = now().diff(now(currentWorkLog.value.startedAt), 'seconds')
@@ -47,6 +49,7 @@ function handleTracking () {
   }
   start()
 }
+
 function startTracking () {
   if (!currentWorkLog.value) {
     createTimeLog()
@@ -56,6 +59,7 @@ function startTracking () {
   }
   start()
 }
+
 async function createTimeLog () {
   const id = generateId()
   const logItem: TimeLog = {
@@ -77,6 +81,7 @@ async function createTimeLog () {
     stopTracking()
   }
 }
+
 async function updateWorkLog () {
   if (currentWorkLog.value) {
     const { error } = await updateDoc(jiraIssue.value.path as string, {
@@ -87,6 +92,33 @@ async function updateWorkLog () {
     }
   }
 }
+
+async function updateJiraIssueStatus () {
+  try {
+    const { data: issueTransitions } = await useFetch(JIRA_ISSUE_TRANSITIONS_URL_API, {
+      // @ts-ignore
+      headers: { authorization: useState('jiraAuth').value },
+      server: false,
+      query: { issueCode: jiraIssue.value.code }
+    })
+    if (!issueTransitions.value?.length) {
+      return
+    }
+    const progressStatus = issueTransitions.value.find((p: any) => p.code === 'IN_PROGRESS')
+    if (!progressStatus) {
+      return
+    }
+    await useFetch(JIRA_ISSUE_TRANSITION_URL_API, {
+      // @ts-ignore
+      headers: { authorization: useState('jiraAuth').value },
+      method: 'POST',
+      body: { issueCode: jiraIssue.value.code, toStatusId: progressStatus.id }
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 async function createJiraIssueWorkLog () {
   try {
     if (!currentWorkLog.value) { return }
@@ -126,37 +158,11 @@ async function updateJiraIssueWorkLog () {
         workLogId: currentWorkLog.value.jiraWorkLogId
       }
     })
-    jiraIssueUpdateCount.value++
   } catch (e) {
     console.error(e)
   }
 }
 
-async function updateJiraIssueStatus () {
-  try {
-    const { data: issueTransitions } = await useFetch(JIRA_ISSUE_TRANSITIONS_URL_API, {
-      // @ts-ignore
-      headers: { authorization: useState('jiraAuth').value },
-      server: false,
-      query: { issueCode: jiraIssue.value.code }
-    })
-    if (!issueTransitions.value?.length) {
-      return
-    }
-    const progressStatus = issueTransitions.value.find((p: any) => p.code === 'IN_PROGRESS')
-    if (!progressStatus) {
-      return
-    }
-    await useFetch(JIRA_ISSUE_TRANSITION_URL_API, {
-      // @ts-ignore
-      headers: { authorization: useState('jiraAuth').value },
-      method: 'POST',
-      body: { issueCode: jiraIssue.value.code, toStatusId: progressStatus.id }
-    })
-  } catch (e) {
-    console.error(e)
-  }
-}
 function stopTracking () {
   stop()
   updateDoc(jiraIssue.value.path as string, {
@@ -165,44 +171,18 @@ function stopTracking () {
   updateJiraIssueWorkLog()
   currentWorkLog.value = null
 }
-async function confirmDelete () {
-  const canDelete = confirm('No se eliminarán los registros de tiempo en JIRA. ¿Eliminar tarea?')
-  if (canDelete) {
-    const hasDelete = await deleteDoc(jiraIssue.value.path as string)
-    if (hasDelete) {
-      emit('onDeleted', jiraIssue.value)
-    }
-  }
-}
 </script>
 
 <template>
-  <AppCard class="max-w-none">
-    <div class="flex items-center justify-between">
-      <h2 class="card-title">
-        {{ jiraIssue.code }}
-      </h2>
-      <AppDropdown>
-        <template #activator>
-          <AppIcon icon="simple-line-icons:options" width="25" />
-        </template>
-        <button class="flex" @click="confirmDelete">
-          <AppIcon icon="material-symbols:delete" width="30" class="text-red-500" />
-        </button>
-      </AppDropdown>
+  <div class="flex items-center justify-between gap-4 mb-2">
+    <div>
+      <button v-if="!isTracking" title="Empezar nuevo registro" @click="startTracking()">
+        <AppIcon icon="solar:play-bold" width="30" class="text-green-500" />
+      </button>
+      <button v-else title="Detener registro" @click="stopTracking()">
+        <AppIcon icon="solar:stop-bold" width="30" class="text-orange-600" />
+      </button>
     </div>
-    <p class="line-clamp-1">{{ jiraIssue.description }}</p>
-    <div class="flex items-center justify-between gap-4 mb-2">
-      <div>
-        <button v-if="!isTracking" title="Empezar nuevo registro" @click="startTracking">
-          <AppIcon icon="solar:play-bold" width="30" class="text-green-500" />
-        </button>
-        <button v-else title="Detener registro" @click="stopTracking">
-          <AppIcon icon="solar:stop-bold" width="30" class="text-orange-600" />
-        </button>
-      </div>
-      <AppCountdown :seconds="timeSpentSeconds" class="text-2xl" />
-    </div>
-    <JiraIssueDetails :issue="jiraIssue" :jira-issue-update-count="jiraIssueUpdateCount" />
-  </AppCard>
+    <AppCountdown :seconds="timeSpentSeconds" class="text-2xl" />
+  </div>
 </template>

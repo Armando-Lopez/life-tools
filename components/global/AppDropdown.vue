@@ -1,5 +1,9 @@
 <script setup lang="ts">
-// const props = defineProps({})
+const props = defineProps({
+  contentClass: {
+    type: String, default: ''
+  }
+})
 </script>
 
 <template>
@@ -8,8 +12,12 @@
       <slot name="activator" />
     </label>
 
-    <div tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box">
+    <ul
+      tabindex="0"
+      class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box"
+      :class="props.contentClass"
+    >
       <slot />
-    </div>
+    </ul>
   </div>
 </template>

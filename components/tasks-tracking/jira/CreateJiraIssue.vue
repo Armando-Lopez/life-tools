@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Task } from '~/interfaces/tasksTracking'
 import { TRACKING_JIRA_PATH } from '~/constants/firebaseConstants'
-import { JIRA_ISSUE_URL_API, JIRA_ISSUE_WORK_LOG_URL_API } from '~/constants/api'
+import { JIRA_ISSUE_URL_API } from '~/constants/api'
 
-const { createDoc, updateDoc } = useFirestore()
+const { createDoc } = useFirestore()
 const emit = defineEmits(['onCreateJiraIssue'])
 
 const formRef = ref(null)
@@ -13,6 +13,7 @@ const isInvalidIssue = ref(false)
 const model = ref<Task>({
   code: null,
   description: '',
+  isPinned: false,
   timeLogs: {}
 })
 
@@ -55,26 +56,6 @@ async function saveIssueTracker (issueData: Object) {
     })
     isModalOpen.value = false
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getJiraIssueWorkLogs (saveData: object) {
-  const { data } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
-    // @ts-ignore
-    headers: { authorization: useState('jiraAuth').value },
-    query: { issue: model.value.code }
-  })
-  const timeLogs = {};
-  (data.value?.worklogs || []).forEach((log: any) => {
-    const id = `j_${log.id}`
-    timeLogs[id] = {
-      id,
-      jiraWorkLogId: id,
-      startedAt: log.started,
-      timeSpentSeconds: log.timeSpentSeconds
-    }
-  })
-  await updateDoc(saveData.path, { timeLogs })
 }
 
 watch(isModalOpen, (newValue) => {

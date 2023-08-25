@@ -10,6 +10,7 @@ export interface Task {
   code?: string | null
   description?: string
   id?: string
+  isPinned?: boolean
   name?: string
   meta?: any
   path?: string

@@ -13,19 +13,19 @@ definePageMeta({ middleware: 'auth' })
           Realiza registros del tiempo invertido actividades
         </p>
         <p>
-          Elige donde guardar el registo de tiempo:
+          Elige dónde gestionar tus registos de tiempo
         </p>
         <div class="mt-4">
           <NuxtLink :to="{ name: 'registro-de-tiempos-jira' }">
-            <AppCard>
+            <AppCard class="w-80">
               <div class="flex gap-2 mb-2">
-                <AppIcon icon="devicon:jiraalign" width="40" />
+                <AppIcon icon="devicon:jiraalign" width="35" />
                 <h3 class="font-bold text-3xl">
                   JIRA
                 </h3>
               </div>
               <p class="text-log">
-                Registar tiempo automáticamente en tareas de JIRA
+                Gestiona todas tus insidencias en un sólo lugar
               </p>
             </AppCard>
           </NuxtLink>
