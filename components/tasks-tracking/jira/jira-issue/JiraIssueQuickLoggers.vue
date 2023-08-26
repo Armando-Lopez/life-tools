@@ -88,12 +88,7 @@ async function createTodayLog (logger: QuickTimeLogger) {
     </button>
     <div v-else>
       <ul class="divide-y divide-neutral-content/1">
-        <li v-for="logger in quickLoggers" :key="logger.id" class="flex items-center gap-2">
-          <p>
-            <strong>{{ logger.name }}</strong>
-            -
-            De <span>{{ logger.duration }}</span> a las {{ logger.time }}
-          </p>
+        <li v-for="logger in quickLoggers" :key="logger.id" class="flex flex-wrap items-center gap-2">
           <span v-if="isJiraIssueLoading" class="loading loading-spinner text-green-500" />
           <div v-else-if="hasTodayWorkLog" class="flex gap-2 items-center">
             <AppIcon icon="tabler:clock-check" width="20" class="text-green-500" />
@@ -101,17 +96,21 @@ async function createTodayLog (logger: QuickTimeLogger) {
           </div>
           <button
             v-else
-            class="flex btn btn-sm shadow bg-base-100"
+            class="flex btn btn-sm p-0.5 shadow bg-base-100"
             :disabled="isJiraIssueLoading"
             @click="createTodayLog(logger)"
           >
             <AppIcon icon="solar:play-bold" width="20" class="text-green-500" />
             Registrar hoy
           </button>
-          <!--            <AppIcon icon="mingcute:check-fill" width="20" class="text-green-500" />-->
-          <!--            <button>-->
-          <!--              <AppIcon icon="material-symbols:delete" width="20" class="text-red-500" />-->
-          <!--            </button>-->
+          <p>
+            <strong>{{ logger.name }}</strong>
+            -
+            De <span>{{ logger.duration }}</span> a las {{ logger.time }}
+          </p>
+          <button title="Eliminar registro rápido">
+            <AppIcon icon="material-symbols:delete" width="20" class="text-red-500" />
+          </button>
         </li>
       </ul>
     </div>
