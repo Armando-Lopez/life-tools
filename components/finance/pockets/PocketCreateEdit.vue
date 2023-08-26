@@ -45,7 +45,7 @@ watch(financeStore.pocketToEdit, (newValue) => {
     title="Crear bolsillo"
     @click="financeStore.showPocketModal = true"
   >
-    <AppIcon icon="mdi:pencil-add" width="20px" class="text-white" />
+    <AppIcon icon="mdi:pencil-plus" width="20px" class="text-white" />
   </button>
   <AppModal v-model="financeStore.showPocketModal">
     <AppForm
@@ -56,7 +56,7 @@ watch(financeStore.pocketToEdit, (newValue) => {
       @success="savePocket"
     >
       <p class="mb-5 font-semibold text-center text-2xl">
-        {{ financeStore.pocketToEdit.data.id ? "Editar" : "Agregar" }} bolsillo
+        {{ financeStore.pocketToEdit.data.id ? "Editar" : "Crear" }} bolsillo
       </p>
       <AppTextField
         label="¿Dónde se encuentra el dinero?"

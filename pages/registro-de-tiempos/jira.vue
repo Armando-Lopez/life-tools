@@ -32,7 +32,7 @@ async function getJiraAuthCredentials () {
 <template>
   <main class="container mx-auto px-4">
     <div class="flex justify-between items-center">
-      <div class="breadcrumbs text-neutral">
+      <div class="breadcrumbs">
         <ul>
           <li>
             <NuxtLink :to="{ name: 'registro-de-tiempos' }">

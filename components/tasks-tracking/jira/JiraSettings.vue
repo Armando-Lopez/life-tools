@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { SETTINGS_PATH } from '~/constants/firebaseConstants'
 
-const { getDoc, updateDoc } = useFirestore()
+const { createDocOrUpdateIfExists, getDoc, updateDoc } = useFirestore()
 
 const jiraIssueUpdateIntervalInSeconds = [
   { text: 'Cada munito', value: 60 },
@@ -27,12 +27,16 @@ onMounted(() => {
 })
 
 async function getSettings () {
-  const { data = {} } = await getDoc(SETTINGS_PATH)
-  formRef.value.setValues({
-    autoMoveIssueToProgress: data?.autoMoveIssueToProgress || jiraSettings.value.autoMoveIssueToProgress,
-    jiraUpdateIntervalInSeconds: data?.jiraUpdateIntervalInSeconds || jiraSettings.value.jiraUpdateIntervalInSeconds,
-    path: data?.path || ''
-  })
+  const { data } = await getDoc(SETTINGS_PATH)
+  if (data) {
+    formRef.value.setValues({
+      autoMoveIssueToProgress: data?.autoMoveIssueToProgress || jiraSettings.value.autoMoveIssueToProgress,
+      jiraUpdateIntervalInSeconds: data?.jiraUpdateIntervalInSeconds || jiraSettings.value.jiraUpdateIntervalInSeconds,
+      path: data?.path || ''
+    })
+  } else {
+    await createDocOrUpdateIfExists(SETTINGS_PATH, jiraSettings.value)
+  }
 }
 
 async function saveSettings () {
@@ -43,7 +47,7 @@ async function saveSettings () {
 </script>
 
 <template>
-  <AppModal>
+  <AppModal eager>
     <template #activator="{ toggle }">
       <button title="Ajustes" class="btn btn-sm" @click="toggle">
         <AppIcon icon="fluent:settings-28-filled" width="25" />

@@ -6,14 +6,21 @@ export interface TimeLog {
   jiraWorkLogId?: string | number
 }
 
+export interface QuickTimeLogger {
+  duration: string
+  name: string
+  time: string
+}
+
 export interface Task {
-  code?: string | null
+  code: string
   description?: string
   id?: string
   isPinned?: boolean
   name?: string
   meta?: any
   path?: string
+  quickLoggers?: QuickTimeLogger
   timeLogs?: object
   trackingSeconds?: number
 }

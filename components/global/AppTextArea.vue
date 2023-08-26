@@ -5,7 +5,7 @@ const props = defineProps({
   name: { type: String, required: true },
   placeholder: { type: String, default: '' },
   label: { type: String, default: '' },
-  rules: { type: String, default: '' }
+  rules: { type: [String, Object], default: '' }
 })
 
 const { formContext, error, isRequired } = useFormField({

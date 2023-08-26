@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Task } from '~/interfaces/tasksTracking'
 import { TRACKING_JIRA_PATH } from '~/constants/firebaseConstants'
-import { JIRA_ISSUE_URL_API } from '~/constants/api'
+import { JIRA_ISSUES_URL_API } from '~/constants/api'
 
 const { createDoc } = useFirestore()
 const emit = defineEmits(['onCreateJiraIssue'])
@@ -14,6 +14,7 @@ const model = ref<Task>({
   code: null,
   description: '',
   isPinned: false,
+  quickLoggers: {},
   timeLogs: {}
 })
 
@@ -33,7 +34,7 @@ async function handleIssueCreation () {
 
 async function getIssueDataFromJira () {
   isInvalidIssue.value = false
-  const { data } = await useFetch(JIRA_ISSUE_URL_API, {
+  const { data } = await useFetch(JIRA_ISSUES_URL_API, {
     server: false,
     // @ts-ignore
     headers: { authorization: useState('jiraAuth').value },
@@ -70,19 +71,19 @@ watch(isModalOpen, (newValue) => {
     class="md:hidden fixed bottom-3 right-3 z-10 btn btn-primary"
     @click="isModalOpen = true"
   >
-    <AppIcon icon="ic:baseline-create" width="20" class="text-white" />
-    Agregar tarea
+    <AppIcon icon="mdi:pencil-plus" width="20" class="text-white" />
+    Crear tarea
   </button>
   <button
     class="hidden md:flex btn btn-primary"
     @click="isModalOpen = true"
   >
-    <AppIcon icon="ic:baseline-create" width="20" />
-    Agregar tarea
+    <AppIcon icon="mdi:pencil-plus" width="20" />
+    Crear tarea
   </button>
   <AppModal v-model="isModalOpen">
     <p class="mb-5 font-semibold text-lg">
-      Agregar tarea vinculada a JIRA
+      Crear tarea vinculada a JIRA
     </p>
     <AppForm
       ref="formRef"

@@ -2,12 +2,13 @@
 import { useFormField } from '~/composables/useFormField'
 
 const props = defineProps({
-  name: { type: String, required: true },
-  type: { type: String, default: 'text' },
-  placeholder: { type: String, default: '' },
+  errorMessage: { type: String, default: '' },
+  hint: { type: String, default: '' },
   label: { type: String, default: '' },
-  rules: { type: String, default: '' },
-  errorMessage: { type: String, default: '' }
+  name: { type: String, required: true },
+  placeholder: { type: String, default: '' },
+  rules: { type: [String, Object], default: '' },
+  type: { type: String, default: 'text' }
 })
 
 const { formContext, error, isRequired } = useFormField({
@@ -33,6 +34,7 @@ const { formContext, error, isRequired } = useFormField({
       class="input input-bordered input-primary w-full"
       :class="{ 'input-error': !!error }"
     >
+    <span v-if="props.hint" class="opacity-80 text-sm">{{ props.hint }}</span>
     <label :for="props.name" class="label">
       <span class="label-text-alt text-error">{{ error || props.errorMessage }}</span>
     </label>

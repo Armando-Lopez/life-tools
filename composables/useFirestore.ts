@@ -12,7 +12,6 @@ import {
 import dayjs from 'dayjs'
 import { generateId } from '~/helpers'
 import { useUserStore } from '~/stores/user'
-import { Task } from '~/interfaces/tasksTracking'
 
 export const useFirestore = () => {
   const { $db } = useNuxtApp()
@@ -31,8 +30,8 @@ export const useFirestore = () => {
         updated: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         ...values
       }
-      // @ts-ignore
       const fullPath = `${userStore.user.email}/${path}/${id}`
+      // @ts-ignore
       await setDoc(doc($db, fullPath), data)
       return { data: { ...data, id, path: fullPath }, error: null }
     } catch (error) {
@@ -104,7 +103,7 @@ export const useFirestore = () => {
     }
   }
 
-  const updateDoc = async (path: string | undefined, values: Task) => {
+  const updateDoc = async (path: string | undefined, values: object) => {
     try {
       if (!path) { return { error: 'No path', data: null } }
       toggleLoading()
@@ -126,6 +125,7 @@ export const useFirestore = () => {
   async function deleteDoc (path: string): Promise<Boolean> {
     try {
       if (!path) { return false }
+      // @ts-ignore
       await deleteFirebaseDoc(doc($db, path))
       return true
     } catch (err) {

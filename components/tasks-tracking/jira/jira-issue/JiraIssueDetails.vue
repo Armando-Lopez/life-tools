@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { JIRA_ISSUE_URL_API } from '~/constants/api'
+import { JIRA_ISSUES_URL_API } from '~/constants/api'
 import { Task } from '~/interfaces/tasksTracking'
 
 const props = defineProps({
@@ -11,7 +11,7 @@ const props = defineProps({
 })
 
 const { textTimeToSeconds } = useTime()
-const { data, pending, execute: getJiraIssueDetails } = await useFetch(JIRA_ISSUE_URL_API, {
+const { data, pending, execute: getJiraIssueDetails } = await useFetch(JIRA_ISSUES_URL_API, {
   lazy: true,
   server: false,
   immediate: false,
@@ -32,7 +32,7 @@ function handleGetData () {
     <AppAccordion @on-open="handleGetData()">
       <template #header>
         <button class="mr-4">
-          <AppIcon icon="carbon:view-filled" width="30" class="text-info" />
+          <AppIcon icon="carbon:view-filled" width="20" class="text-info" />
         </button>
         Ver más detalles
       </template>

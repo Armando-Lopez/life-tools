@@ -37,17 +37,19 @@ function removeIssue (issue: Task) {
     </div>
     <AppLoader v-if="isLoading" class="mx-auto mt-40" />
     <div v-else>
-      <p class="flex items-center mb-2">
-        <AppIcon icon="mdi:pin" width="20" />
-        Ancladas
-      </p>
-      <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg: gap-4">
-        <li v-for="issue in pinnedJiraIssues" :key="issue.id">
-          <JiraIssue :key="issue.id" :issue="issue" @on-deleted="removeIssue($event)" />
-        </li>
-      </ul>
-      <div class="divider" />
-      <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg: gap-4">
+      <template v-if="pinnedJiraIssues.length">
+        <p class="flex items-center mb-2">
+          <AppIcon icon="mdi:pin" width="20" class="text-blue-500" />
+          Ancladas
+        </p>
+        <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 lg: gap-4">
+          <li v-for="issue in pinnedJiraIssues" :key="issue.id">
+            <JiraIssue :key="issue.id" :issue="issue" @on-deleted="removeIssue($event)" />
+          </li>
+        </ul>
+        <div class="divider" />
+      </template>
+      <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 lg: gap-4">
         <li v-for="issue in noPinnedJiraIssues" :key="issue.id">
           <JiraIssue :key="issue.id" :issue="issue" @on-deleted="removeIssue($event)" />
         </li>

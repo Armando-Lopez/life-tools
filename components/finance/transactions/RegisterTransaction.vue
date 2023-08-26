@@ -121,7 +121,7 @@ async function saveDescription () {
           title="Crear bolsillo"
           @click="financeStore.showPocketModal = true"
         >
-          <AppIcon icon="mdi:pencil-add" width="20px" class="text-white" />
+          <AppIcon icon="mdi:pencil-plus" width="20px" class="text-white" />
         </button>
         desde el menú de acciónes
       </p>

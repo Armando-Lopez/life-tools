@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Task } from '~/interfaces/tasksTracking'
+import JiraIssueTimeTracker from '~/components/tasks-tracking/jira/jira-issue/JiraIssueTimeTracker.vue'
+import JiraIssueQuickLoggers from '~/components/tasks-tracking/jira/jira-issue/JiraIssueQuickLoggers.vue'
 import JiraIssueDetails from '~/components/tasks-tracking/jira/jira-issue/JiraIssueDetails.vue'
-import JiraIssueTracker from '~/components/tasks-tracking/jira/jira-issue/JiraIssueTracker.vue'
 
 const props = defineProps<{ issue: Task }>()
 const emit = defineEmits(['onDeleted'])
@@ -10,6 +11,9 @@ const { deleteDoc, updateDoc } = useFirestore()
 
 const jiraIssues = useJiraIssues()
 const jiraIssue = ref<Task>(props.issue)
+
+provide('jiraIssue', jiraIssue.value)
+provide('updateJiraIssue', (newValue: Task) => (jiraIssue.value = newValue))
 
 async function togglePinJiraIssue () {
   const newValue = Boolean(!jiraIssue.value.isPinned)
@@ -37,13 +41,13 @@ async function confirmDelete () {
       <h2 class="card-title">
         {{ jiraIssue.code }}
       </h2>
-      <AppDropdown content-class="w-52">
+      <AppDropdown content-class="w-52 divide-y divide-neutral-content/10">
         <template #activator>
           <AppIcon icon="fluent:settings-28-filled" width="20" title="administrar insidencia" />
         </template>
         <li>
           <button class="flex" @click="togglePinJiraIssue()">
-            <AppIcon icon="mdi:pin" width="20" />
+            <AppIcon icon="mdi:pin" width="20" class="text-blue-500" />
             <span v-if="jiraIssue.isPinned">Desanclar del inicio</span>
             <span v-else>Anclar al inicio</span>
           </button>
@@ -59,7 +63,10 @@ async function confirmDelete () {
     <p class="line-clamp-1">
       {{ jiraIssue.description }}
     </p>
-    <JiraIssueTracker :issue="jiraIssue" />
+    <JiraIssueTimeTracker />
+    <div class="divider my-0" />
+    <JiraIssueQuickLoggers />
+    <div class="divider my-0" />
     <JiraIssueDetails :issue="jiraIssue" />
   </AppCard>
 </template>
