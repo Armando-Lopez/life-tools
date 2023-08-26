@@ -82,7 +82,7 @@ async function createTodayLog (logger: QuickTimeLogger) {
 
 <template>
   <div>
-    <button v-if="!quickLoggers.length" class="mb-2 btn btn-sm shadow bg-base-100" @click="loggerModal = true">
+    <button v-if="!quickLoggers.length" class="btn btn-sm shadow bg-base-100" @click="loggerModal = true">
       <AppIcon icon="tabler:clock-plus" width="20" class="text-green-600" />
       <span class="text-sm">Crear Registro rápido</span>
     </button>
