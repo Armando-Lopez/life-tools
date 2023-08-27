@@ -4,13 +4,15 @@ const props = defineProps({
   eager: { type: Boolean, default: false },
   persistent: { type: Boolean, default: false }
 })
-// eslint-disable-next-line func-call-spacing
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-}>()
+
+const emit = defineEmits(['update:modelValue'])
 
 const modal = ref<HTMLDialogElement>()
-const isOpen = ref(false)
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: value => emit('update:modelValue', value)
+})
 
 onMounted(() => {
   document.body.appendChild(modal.value)
@@ -20,17 +22,14 @@ onBeforeUnmount(() => {
 })
 
 watch(isOpen, (newValue: boolean) => {
-  if (newValue) {
-    modal.value?.showModal()
-  } else {
-    modal.value?.close()
-  }
-  emit('update:modelValue', newValue)
-})
-
-watchEffect(() => {
-  isOpen.value = props.modelValue
-})
+  nextTick(() => {
+    if (newValue) {
+      modal.value?.showModal()
+    } else {
+      modal.value?.close()
+    }
+  })
+}, { immediate: true })
 
 function toggle () {
   isOpen.value = !isOpen.value

@@ -5,31 +5,26 @@ import JiraIssueQuickLoggers from '~/components/tasks-tracking/jira/jira-issue/J
 import JiraIssueDetails from '~/components/tasks-tracking/jira/jira-issue/JiraIssueDetails.vue'
 
 const props = defineProps<{ issue: Task }>()
-const emit = defineEmits(['onDeleted'])
+const emit = defineEmits(['onTogglePin', 'onDeleted'])
 
 const { deleteDoc, updateDoc } = useFirestore()
 
-const jiraIssues = useJiraIssues()
-const jiraIssue = ref<Task>(props.issue)
-
-provide('jiraIssue', jiraIssue.value)
-provide('updateJiraIssue', (newValue: Task) => (jiraIssue.value = newValue))
+provide('jiraIssue', props.issue)
 
 async function togglePinJiraIssue () {
-  const newValue = Boolean(!jiraIssue.value.isPinned)
-  const { data } = await updateDoc(jiraIssue.value.path, { isPinned: newValue })
+  const newValue = Boolean(!props.issue.isPinned)
+  const { data } = await updateDoc(props.issue.path, { isPinned: newValue })
   if (data) {
-    const index = jiraIssues.value.findIndex((i: Task) => i.id === jiraIssue.value.id)
-    jiraIssues.value[index].isPinned = newValue
+    emit('onTogglePin', { id: props.issue.id, isPinned: newValue })
   }
 }
 
 async function confirmDelete () {
   const canDelete = confirm('No se eliminarán los registros de tiempo en JIRA. ¿Eliminar tarea?')
   if (canDelete) {
-    const hasDelete = await deleteDoc(jiraIssue.value.path as string)
+    const hasDelete = await deleteDoc(props.issue.path as string)
     if (hasDelete) {
-      emit('onDeleted', jiraIssue.value)
+      emit('onDeleted', props.issue)
     }
   }
 }
@@ -38,17 +33,20 @@ async function confirmDelete () {
 <template>
   <AppCard class="max-w-none">
     <div class="flex items-center justify-between">
-      <h2 class="card-title">
-        {{ jiraIssue.code }}
-      </h2>
+      <div class="flex items-center gap-1">
+        <AppIcon v-if="props.issue.isPinned" icon="mdi:pin" width="20" class="text-blue-500" />
+        <h2 class="card-title">
+          {{ props.issue.code }}
+        </h2>
+      </div>
       <AppDropdown content-class="w-52 divide-y divide-neutral-content/10">
         <template #activator>
-          <AppIcon icon="fluent:settings-28-filled" width="20" title="administrar insidencia" />
+          <AppIcon icon="fluent:settings-28-filled" width="25" title="administrar insidencia" />
         </template>
         <li>
           <button class="flex" @click="togglePinJiraIssue()">
             <AppIcon icon="mdi:pin" width="20" class="text-blue-500" />
-            <span v-if="jiraIssue.isPinned">Desanclar del inicio</span>
+            <span v-if="props.issue.isPinned">Desanclar del inicio</span>
             <span v-else>Anclar al inicio</span>
           </button>
         </li>
@@ -61,12 +59,11 @@ async function confirmDelete () {
       </AppDropdown>
     </div>
     <p class="line-clamp-1">
-      {{ jiraIssue.description }}
+      {{ props.issue.description }}
     </p>
     <JiraIssueTimeTracker />
     <div class="divider my-0" />
     <JiraIssueQuickLoggers />
-    <div class="divider my-0" />
-    <JiraIssueDetails :issue="jiraIssue" />
+    <JiraIssueDetails v-if="false" :issue="props.issue" />
   </AppCard>
 </template>

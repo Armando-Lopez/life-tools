@@ -21,6 +21,7 @@ const jiraSettings = useState('jiraSettings', () => ({
   path: ''
 }))
 const formRef = ref(null)
+const settingsModal = ref(false)
 
 onMounted(() => {
   getSettings()
@@ -47,7 +48,7 @@ async function saveSettings () {
 </script>
 
 <template>
-  <AppModal eager>
+  <AppModal v-model="settingsModal" eager>
     <template #activator="{ toggle }">
       <button title="Ajustes" class="btn btn-sm" @click="toggle">
         <AppIcon icon="fluent:settings-28-filled" width="25" />

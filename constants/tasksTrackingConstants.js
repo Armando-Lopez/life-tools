@@ -1,3 +1,5 @@
+export const JIRA_TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss.000-0500'
+
 export const EVENT_COLORS = [
   { id: 1, background: '#a4bdfc' },
   { id: 2, background: '#7ae7bf' },

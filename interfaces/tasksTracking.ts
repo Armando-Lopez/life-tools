@@ -7,9 +7,11 @@ export interface TimeLog {
 }
 
 export interface QuickTimeLogger {
+  id?: string
   duration: string
   name: string
   time: string
+  hasTodayWorkLog?: boolean
 }
 
 export interface Task {
@@ -20,9 +22,10 @@ export interface Task {
   name?: string
   meta?: any
   path?: string
-  quickLoggers?: QuickTimeLogger
+  quickLoggers?: object
   timeLogs?: object
   trackingSeconds?: number
+  created?: string
 }
 
 export interface CalendarTask {

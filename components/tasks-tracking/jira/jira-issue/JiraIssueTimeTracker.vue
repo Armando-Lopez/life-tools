@@ -5,6 +5,7 @@ import {
   JIRA_ISSUE_WORK_LOG_URL_API
 } from '~/constants/api'
 import { generateId } from '~/helpers'
+import { JIRA_TIMESTAMP_FORMAT } from '~/constants/tasksTrackingConstants'
 
 const { updateDoc } = useFirestore()
 const { now } = useTime()
@@ -57,7 +58,7 @@ async function createTimeLog () {
   const logItem: TimeLog = {
     id,
     jiraWorkLogId: '',
-    startedAt: now().format('YYYY-MM-DDTHH:mm:ss.000-0500'),
+    startedAt: now().format(JIRA_TIMESTAMP_FORMAT),
     timeSpentSeconds: 0
   }
   const { data } = await updateDoc(jiraIssue.path as string, {
@@ -174,6 +175,6 @@ function stopTracking () {
         <AppIcon icon="solar:stop-bold" width="31" class="text-orange-600" />
       </button>
     </div>
-    <AppCountdown :seconds="timeSpentSeconds" class="text-xl" />
+    <AppCountdown :seconds="timeSpentSeconds" class="text-2xl" />
   </div>
 </template>

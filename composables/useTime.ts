@@ -9,8 +9,9 @@ export const useTime = () => {
   dayjs.extend(utc)
   dayjs.extend(timezone)
   dayjs.locale('es')
+
   const formatTime = (time: string, format: string) => dayjs(time).format(format)
-  // @ts-ignore
+  // const todayAtMidnight = () =>
   const duration = (milliseconds: Number) => {
     // @ts-ignore
     const d = dayjs.duration(milliseconds)

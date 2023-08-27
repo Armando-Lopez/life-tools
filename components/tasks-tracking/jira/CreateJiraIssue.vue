@@ -11,7 +11,7 @@ const isModalOpen = ref(false)
 const isLoading = ref(false)
 const isInvalidIssue = ref(false)
 const model = ref<Task>({
-  code: null,
+  code: '',
   description: '',
   isPinned: false,
   quickLoggers: {},
@@ -68,7 +68,7 @@ watch(isModalOpen, (newValue) => {
 
 <template>
   <button
-    class="md:hidden fixed bottom-3 right-3 z-10 btn btn-primary"
+    class="md:hidden fixed bottom-4 right-4 z-10 btn btn-primary"
     @click="isModalOpen = true"
   >
     <AppIcon icon="mdi:pencil-plus" width="20" class="text-white" />
