@@ -12,39 +12,77 @@ const jiraIssue = inject<Task>('jiraIssue', {} as Task)
 
 const createLoggerModal = ref(false)
 const quickLoggers = ref<QuickTimeLogger[]>(Object.values(jiraIssue.quickLoggers || {} as QuickTimeLogger))
+const confirmModal = ref({ isOpen: false, message: '', callback: () => {} })
+let loggerExecutionIntervalId: any = null
 
-onMounted(getTodayWorkLogs)
+onMounted(getTodayIssueWorkLogs)
 
 function addQuickLogger (logger: QuickTimeLogger) {
   quickLoggers.value.push(logger)
+  getTodayIssueWorkLogs()
   createLoggerModal.value = false
 }
 
-async function getTodayWorkLogs () {
+async function getTodayIssueWorkLogs () {
   if (!quickLoggers?.value.length) { return }
   const todayAtMidnightInMilliseconds = now().set('h', 0).set('m', 0).set('s', 0).valueOf()
   const { data } = await getJiraIssueWorkLogs({
     issueCode: jiraIssue.code,
     startedAfter: todayAtMidnightInMilliseconds
   })
-  if (!data.worklogs?.length) { return }
+  if (!data.worklogs?.length) {
+    handleQuickLoggerLogByMode(0)
+    return
+  }
   quickLoggers.value = quickLoggers.value.map((logger) => {
     const hasTodayWorkLog = data.worklogs.some((workLog: any) => {
-      const [h, m] = jiraIssue.quickLoggers?.value[0].time.split(':').map(t => Number(t))
-      const loggerTodayStarted = now().set('h', h).set('m', m).set('s', 0).format(JIRA_TIMESTAMP_FORMAT)
-      return workLog.started === loggerTodayStarted
+      const [h, m] = logger.startAt.split(':').map((t : string) => Number(t))
+      const loggerTodayStartAt = now().set('h', h).set('m', m).set('s', 0).format(JIRA_TIMESTAMP_FORMAT)
+      return workLog.started === loggerTodayStartAt
     })
     return { ...logger, hasTodayWorkLog }
   })
+  handleQuickLoggerLogByMode(0)
 }
 
-async function addJiraTodayLog (logger: QuickTimeLogger) {
-  const [h, m] = logger.time.split(':').map(t => Number(t))
-  const started = now().set('h', h).set('m', m).set('s', 0).format(JIRA_TIMESTAMP_FORMAT)
+function handleQuickLoggerLogByMode (loggerIndex: number) {
+  const logger = quickLoggers.value[loggerIndex]
+  if (logger?.hasTodayWorkLog) { return }
+  loggerExecutionIntervalId = setInterval(async () => {
+    if (confirmModal.value.isOpen || isJiraIssueLoading.value) { return }
+    const hourNow = now().format('HH:mm')
+    const hasPassedLogTime = hourNow >= logger.startAt
+    if (!hasPassedLogTime) { return }
+    if (logger.mode === 'PRE') {
+      confirmModal.value.isOpen = true
+      confirmModal.value.message = `¿Desea registrar ${logger.duration} en ${logger.name} hoy?`
+      // @ts-ignore
+      confirmModal.value.callback = async (value: boolean) => {
+        if (value) {
+          const success = await addJiraTodayLog(logger)
+          if (success) {
+            clearInterval(loggerExecutionIntervalId)
+          }
+        } else {
+          clearInterval(loggerExecutionIntervalId)
+        }
+      }
+    } else if (logger.mode === 'AUT') {
+      const success = await addJiraTodayLog(logger)
+      if (success) {
+        clearInterval(loggerExecutionIntervalId)
+      }
+    }
+  }, 2000)
+}
+
+async function addJiraTodayLog (logger: QuickTimeLogger): Promise<Boolean> {
+  const [h, m] = logger.startAt.split(':').map(t => Number(t))
+  const startAt = now().set('h', h).set('m', m).set('s', 0).format(JIRA_TIMESTAMP_FORMAT)
   const timeSpentSeconds = textTimeToSeconds(logger.duration)
   const { data } = await createJiraIssueWorkLog({
     issueCode: jiraIssue.code,
-    started,
+    startAt,
     timeSpentSeconds
   })
   if (data) {
@@ -52,19 +90,22 @@ async function addJiraTodayLog (logger: QuickTimeLogger) {
     emit('toast:open', {
       type: 'SUCCESS',
       title: logger.name,
-      message: 'Tiempo registrado'
+      message: 'Tiempo registrado en JIRA'
     })
+    return true
   } else {
     emit('toast:open', {
       type: 'SUCCESS',
       title: logger.name,
-      message: 'No se puso registrar el tiempo'
+      message: 'No se puso registrar el tiempo en JIRA'
     })
+    return false
   }
 }
 
 async function deleteQuickLogger (logger: QuickTimeLogger) {
   if (confirm('No se eliminarán los registros de tiempo en JIRA. ¿Eliminar registro rápido?')) {
+    clearInterval(loggerExecutionIntervalId)
     // @ts-ignore
     delete jiraIssue.quickLoggers[`${logger.id}`]
     const { error } = await updateDoc(jiraIssue.path, {
@@ -90,7 +131,7 @@ async function deleteQuickLogger (logger: QuickTimeLogger) {
           <template v-else>
             <div v-if="logger.hasTodayWorkLog" class="flex gap-2 items-center">
               <AppIcon icon="tabler:clock-check" width="20" class="text-green-500" />
-              Hoy registrado
+              Día registrado
             </div>
             <button
               v-else
@@ -99,13 +140,13 @@ async function deleteQuickLogger (logger: QuickTimeLogger) {
               @click="addJiraTodayLog(logger)"
             >
               <AppIcon icon="solar:play-bold" width="20" class="text-green-500" />
-              Registrar hoy
+              Registrar día
             </button>
           </template>
           <p>
             <strong>{{ logger.name }}</strong>
             -
-            De <span>{{ logger.duration }}</span> a las {{ logger.time }}
+            De <span>{{ logger.duration }}</span> a las {{ logger.startAt }}
           </p>
           <button
             class="btn btn-sm p-0 shadow"
@@ -122,6 +163,12 @@ async function deleteQuickLogger (logger: QuickTimeLogger) {
       v-if="createLoggerModal"
       @on-logger-created="addQuickLogger($event)"
       @on-close="createLoggerModal = false"
+    />
+    <LazyAppConfirmModal
+      v-if="confirmModal.isOpen"
+      :message="confirmModal.message"
+      :on-confirm-call-back="confirmModal.callback"
+      @on-close="confirmModal.isOpen = false"
     />
   </div>
 </template>

@@ -1,6 +1,6 @@
 const events = reactive({})
 
-export const emit = (event: string, data: any): void => {
+export const emit = (event: string, data?: any): void => {
   // @ts-ignore
   (events[event] || []).forEach((fn: Function) => fn(data))
 }

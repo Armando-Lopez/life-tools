@@ -12,9 +12,9 @@ export const useTime = () => {
 
   const formatTime = (time: string, format: string) => dayjs(time).format(format)
   // const todayAtMidnight = () =>
-  const duration = (milliseconds: Number) => {
+  const duration = (seconds: Number) => {
     // @ts-ignore
-    const d = dayjs.duration(milliseconds)
+    const d = dayjs.duration(seconds * 1000)
     return {
       days: d.days(),
       hours: d.hours(),

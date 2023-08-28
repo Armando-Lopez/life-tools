@@ -1,31 +1,32 @@
 <script setup lang="ts">
 import { Task, TimeLog } from '~/interfaces/tasksTracking'
-import {
-  JIRA_ISSUE_TRANSITIONS_URL_API,
-  JIRA_ISSUE_WORK_LOG_URL_API
-} from '~/constants/api'
-import { generateId } from '~/helpers'
+import { JIRA_ISSUE_TRANSITIONS_URL_API, JIRA_ISSUE_WORK_LOG_URL_API } from '~/constants/api'
 import { JIRA_TIMESTAMP_FORMAT } from '~/constants/tasksTrackingConstants'
+import { generateId } from '~/helpers'
+import { emit } from '~/helpers/eventBus'
 
 const { updateDoc } = useFirestore()
-const { now } = useTime()
+const { now, duration } = useTime()
 
-const updateWorkLogInterval = 60
+const jiraIssue = inject<Task>('jiraIssue', {} as Task)
 const currentWorkLog = ref<TimeLog|null>(null)
+const isCreatingTimeLog = ref(false)
 const jiraSettings = useState('jiraSettings')
-const jiraIssue = inject<Task>('jiraIssue', {})
-
-const timeSpentSeconds = computed<number>((): number => {
-  let totalTimeSeconds = 0
-  for (const logItem in jiraIssue.timeLogs) {
-    // @ts-ignore
-    totalTimeSeconds += jiraIssue.timeLogs[logItem].timeSpentSeconds
-  }
-  return totalTimeSeconds
-})
+const updateWorkLogInterval = 60
 
 const { isPending: isTracking, start, stop } = useTimeoutFn(handleTracking, 1000)
 stop()
+
+onMounted(() => {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') { return }
+    if (currentWorkLog.value?.timeSpentSeconds || 0 >= 60) {
+      updateJiraIssueWorkLog()
+    }
+  })
+})
+onBeforeMount(stop)
+
 function handleTracking () {
   if (currentWorkLog.value) {
     currentWorkLog.value.timeSpentSeconds = now().diff(now(currentWorkLog.value.startedAt), 'seconds')
@@ -39,42 +40,44 @@ function handleTracking () {
         createJiraIssueWorkLog()
       }
     }
+    start()
   }
-  start()
 }
-
-function startTracking () {
+async function startTracking () {
   if (!currentWorkLog.value) {
-    createTimeLog()
+    await createTimeLog()
   }
   if (jiraSettings.value.autoMoveIssueToProgress) {
     updateJiraIssueStatus()
   }
   start()
 }
-
 async function createTimeLog () {
-  const id = generateId()
-  const logItem: TimeLog = {
-    id,
-    jiraWorkLogId: '',
-    startedAt: now().format(JIRA_TIMESTAMP_FORMAT),
-    timeSpentSeconds: 0
-  }
-  const { data } = await updateDoc(jiraIssue.path as string, {
-    [`timeLogs.${id}`]: logItem
-  })
-  if (data) {
-    currentWorkLog.value = logItem
-    jiraIssue.timeLogs = {
-      ...jiraIssue.timeLogs,
-      [id]: logItem
+  try {
+    isCreatingTimeLog.value = true
+    const id = generateId()
+    const logItem: TimeLog = {
+      id,
+      jiraWorkLogId: '',
+      startedAt: now().format(JIRA_TIMESTAMP_FORMAT),
+      timeSpentSeconds: 0
     }
-  } else {
-    stopTracking()
+    const { data } = await updateDoc(jiraIssue.path as string, {
+      [`timeLogs.${id}`]: logItem
+    })
+    if (data) {
+      currentWorkLog.value = logItem
+      jiraIssue.timeLogs = {
+        ...jiraIssue.timeLogs,
+        [id]: logItem
+      }
+    } else {
+      stopTracking()
+    }
+  } finally {
+    isCreatingTimeLog.value = false
   }
 }
-
 async function updateWorkLog () {
   if (currentWorkLog.value) {
     const { error } = await updateDoc(jiraIssue.path as string, {
@@ -85,7 +88,6 @@ async function updateWorkLog () {
     }
   }
 }
-
 async function updateJiraIssueStatus () {
   try {
     const { data: issueTransitions } = await useFetch(JIRA_ISSUE_TRANSITIONS_URL_API, {
@@ -139,7 +141,7 @@ async function createJiraIssueWorkLog () {
 async function updateJiraIssueWorkLog () {
   try {
     if (!currentWorkLog.value?.jiraWorkLogId) { return }
-    await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
+    const { data } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
       method: 'PUT',
       // @ts-ignore
       headers: { authorization: useState('jiraAuth').value },
@@ -150,11 +152,23 @@ async function updateJiraIssueWorkLog () {
         workLogId: currentWorkLog.value.jiraWorkLogId
       }
     })
+    if (data.value && !isTracking) {
+      let message = ''
+      const { days, hours, minutes, seconds } = duration(currentWorkLog.value.timeSpentSeconds)
+      if (days) { message += `${days}d ` }
+      if (hours) { message += `${hours}h ` }
+      if (minutes) { message += `${minutes}m ` }
+      if (seconds) { message += `${seconds}s` }
+      emit('toast:open', {
+        type: 'SUCCESS',
+        title: jiraIssue.code,
+        message: `${message} registrado en JIRA`
+      })
+    }
   } catch (e) {
     console.error(e)
   }
 }
-
 function stopTracking () {
   stop()
   updateDoc(jiraIssue.path as string, {
@@ -166,15 +180,20 @@ function stopTracking () {
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-4">
-    <div>
-      <button v-if="!isTracking" title="Empezar nuevo registro" @click="startTracking()">
-        <AppIcon icon="solar:play-bold" width="31" class="text-green-500" />
-      </button>
-      <button v-else title="Detener registro" @click="stopTracking()">
-        <AppIcon icon="solar:stop-bold" width="31" class="text-orange-600" />
-      </button>
-    </div>
-    <AppCountdown :seconds="timeSpentSeconds" class="text-2xl" />
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <button
+      v-if="!isTracking"
+      class="btn btn-sm px-0 shadow bg-base-100"
+      :disabled="isCreatingTimeLog"
+      @click="startTracking()"
+    >
+      <AppIcon icon="solar:play-bold" width="25" class="text-green-500" />
+      Empezar conteo
+    </button>
+    <button v-else class="btn btn-sm px-0 shadow bg-base-100" @click="stopTracking()">
+      <AppIcon icon="solar:stop-bold" width="25" class="text-orange-600" />
+      {{ currentWorkLog?.timeSpentSeconds > 60 ? 'Detener y guardar' : 'Detener' }}
+    </button>
+    <AppCountdown :seconds="currentWorkLog?.timeSpentSeconds || 0" class="text-2xl" />
   </div>
 </template>

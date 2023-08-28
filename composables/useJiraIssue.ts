@@ -32,7 +32,18 @@ export const useJiraIssue = () => {
         headers: { authorization: useState('jiraAuth').value },
         query
       })
-      return { data: data.value, error: error.value }
+      if (error.value) {
+        return { data: null, error: error.value }
+      }
+      return {
+        data: {
+          // @ts-ignore
+          ...data.value,
+          // @ts-ignore
+          worklogs: data.value.worklogs.filter(worklog => worklog.author.accountId === useState('jiraUserId').value)
+        },
+        error: null
+      }
     } catch (e) {
       console.error(e)
       return { data: null, error: e }
@@ -40,7 +51,7 @@ export const useJiraIssue = () => {
       toggleLoading()
     }
   }
-  async function createJiraIssueWorkLog (values: { issueCode: string, started: string, timeSpentSeconds: number }) {
+  async function createJiraIssueWorkLog (values: { issueCode: string, startAt: string, timeSpentSeconds: number }) {
     try {
       toggleLoading()
       const { data, error } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
@@ -50,7 +61,7 @@ export const useJiraIssue = () => {
         body: {
           issue: values.issueCode,
           timeSpentSeconds: values.timeSpentSeconds,
-          started: values.started
+          startAt: values.startAt
         }
       })
       return { data: data.value, error: error.value }

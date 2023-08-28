@@ -14,21 +14,14 @@ const isOpen = computed({
   set: value => emit('update:modelValue', value)
 })
 
-onMounted(() => {
-  document.body.appendChild(modal.value)
-})
-onBeforeUnmount(() => {
-  document.body.removeChild(modal.value)
-})
-
 watch(isOpen, (newValue: boolean) => {
-  nextTick(() => {
+  setTimeout(() => {
     if (newValue) {
       modal.value?.showModal()
     } else {
       modal.value?.close()
     }
-  })
+  }, 5)
 }, { immediate: true })
 
 function toggle () {

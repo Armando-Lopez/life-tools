@@ -7,11 +7,12 @@ export interface TimeLog {
 }
 
 export interface QuickTimeLogger {
-  id?: string
   duration: string
-  name: string
-  time: string
   hasTodayWorkLog?: boolean
+  id?: string
+  mode: string
+  name: '' | 'PRE' | 'MAN' | 'AUT'
+  startAt: string
 }
 
 export interface Task {

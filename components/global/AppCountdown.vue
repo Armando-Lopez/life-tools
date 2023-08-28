@@ -3,7 +3,7 @@ const props = defineProps({
   seconds: { type: Number, required: true }
 })
 const { duration } = useTime()
-const timeDurations = computed(() => duration(props.seconds * 1000))
+const timeDurations = computed(() => duration(props.seconds))
 </script>
 
 <template>

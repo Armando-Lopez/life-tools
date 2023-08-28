@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { QuickTimeLogger, Task } from '~/interfaces/tasksTracking'
 import { generateId } from '~/helpers'
+import { JIRA_QUICK_LOGGER_MODES } from '~/constants/tasksTrackingConstants'
 
 const { isLoading: isCreateLoggerLoading, updateDoc } = useFirestore()
 
@@ -11,8 +12,13 @@ const modal = ref(true)
 const model = ref<QuickTimeLogger>({
   duration: '',
   name: '',
-  time: ''
+  startAt: '',
+  mode: ''
 })
+
+const loggerModeDescription = computed(() =>
+  JIRA_QUICK_LOGGER_MODES.find(item => item.code === model.value.mode)?.description
+)
 
 async function addQuickLogger () {
   const id = generateId()
@@ -50,15 +56,25 @@ async function addQuickLogger () {
       />
       <AppTextField
         label="Hora de inicio"
-        name="time"
+        name="startAt"
         type="time"
         rules="required"
+        hint="A partir de está hora se ejecutará en los modos Semiautomático y Automático"
       />
       <AppTextField
         label="Duración"
         name="duration"
         :rules="{ required: true, regex: /^\d+[dhm](?:\s+\d+[dhm])*$/ }"
         hint="Usa este formato: 1h 45m"
+      />
+      <AppSelect
+        :items="JIRA_QUICK_LOGGER_MODES"
+        item-value="code"
+        item-text="name"
+        label="Modo de registro"
+        name="mode"
+        rules="required"
+        :hint="loggerModeDescription"
       />
       <button class="btn btn-block btn-success mt-4">
         <span>Guardar</span>
