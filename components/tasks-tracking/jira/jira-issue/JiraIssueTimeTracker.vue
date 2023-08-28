@@ -152,7 +152,7 @@ async function updateJiraIssueWorkLog () {
         workLogId: currentWorkLog.value.jiraWorkLogId
       }
     })
-    if (!error.value && !isTracking) {
+    if (!error.value && !isTracking.value) {
       let message = ''
       const { days, hours, minutes, seconds } = duration(currentWorkLog.value.timeSpentSeconds)
       if (days) { message += `${days}d ` }
@@ -169,12 +169,12 @@ async function updateJiraIssueWorkLog () {
     console.error(e)
   }
 }
-function stopTracking () {
+async function stopTracking () {
   stop()
   updateDoc(jiraIssue.path as string, {
     [`timeLogs.${currentWorkLog.value?.id}`]: currentWorkLog.value
   })
-  updateJiraIssueWorkLog()
+  await updateJiraIssueWorkLog()
   currentWorkLog.value = null
 }
 </script>
