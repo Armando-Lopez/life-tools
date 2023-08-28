@@ -141,7 +141,7 @@ async function createJiraIssueWorkLog () {
 async function updateJiraIssueWorkLog () {
   try {
     if (!currentWorkLog.value?.jiraWorkLogId) { return }
-    const { data } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
+    const { error } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {
       method: 'PUT',
       // @ts-ignore
       headers: { authorization: useState('jiraAuth').value },
@@ -152,7 +152,7 @@ async function updateJiraIssueWorkLog () {
         workLogId: currentWorkLog.value.jiraWorkLogId
       }
     })
-    if (data.value && !isTracking) {
+    if (!error.value && !isTracking) {
       let message = ''
       const { days, hours, minutes, seconds } = duration(currentWorkLog.value.timeSpentSeconds)
       if (days) { message += `${days}d ` }
