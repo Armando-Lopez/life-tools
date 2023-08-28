@@ -30,7 +30,7 @@ async function getJiraAuthCredentials () {
 </script>
 
 <template>
-  <main class="container mx-auto px-4 md:px-0">
+  <main class="container mx-auto px-4">
     <div class="flex justify-between items-center">
       <div class="breadcrumbs">
         <ul>
