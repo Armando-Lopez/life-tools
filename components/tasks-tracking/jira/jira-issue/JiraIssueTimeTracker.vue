@@ -183,14 +183,14 @@ function stopTracking () {
   <div class="flex flex-wrap items-center justify-between gap-4">
     <button
       v-if="!isTracking"
-      class="btn btn-sm px-0 shadow bg-base-100"
+      class="btn btn-sm px-1 shadow bg-base-100"
       :disabled="isCreatingTimeLog"
       @click="startTracking()"
     >
       <AppIcon icon="solar:play-bold" width="25" class="text-green-500" />
       Empezar conteo
     </button>
-    <button v-else class="btn btn-sm px-0 shadow bg-base-100" @click="stopTracking()">
+    <button v-else class="btn btn-sm px-1 shadow bg-base-100" @click="stopTracking()">
       <AppIcon icon="solar:stop-bold" width="25" class="text-orange-600" />
       {{ currentWorkLog?.timeSpentSeconds > 60 ? 'Detener y guardar' : 'Detener' }}
     </button>
