@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { QuickTimeLogger, Task } from '~/interfaces/tasksTracking'
 import { generateId } from '~/helpers'
-import { JIRA_QUICK_LOGGER_MODES } from '~/constants/tasksTrackingConstants'
 
 const { isLoading: isCreateLoggerLoading, updateDoc } = useFirestore()
 
@@ -13,12 +12,8 @@ const model = ref<QuickTimeLogger>({
   duration: '',
   name: '',
   startAt: '',
-  mode: ''
+  mode: 'AUT'
 })
-
-const loggerModeDescription = computed(() =>
-  JIRA_QUICK_LOGGER_MODES.find(item => item.code === model.value.mode)?.description
-)
 
 async function addQuickLogger () {
   const id = generateId()
@@ -38,10 +33,12 @@ async function addQuickLogger () {
 <template>
   <AppModal v-model="modal" @update:model-value="!$event && emit('onClose')">
     <p class="mb-4 text-xl font-bold">
-      Crear registros rapidos
+      Crear registro programado
     </p>
-    <p>
-      Haz más rápido el registro para horarios repetitivos en esta tarea
+    <p class="mb-4">
+      Programa registros de tiempo con hora y duración determinada.
+      <br>
+      Sólo se ejecutará mientras estés en la applicación.
     </p>
     <AppForm
       v-model="model"
@@ -50,31 +47,19 @@ async function addQuickLogger () {
       @success="addQuickLogger"
     >
       <AppTextField
-        label="Nombre"
-        name="name"
-        rules="required|max:100"
-      />
-      <AppTextField
         label="Hora de inicio"
         name="startAt"
         type="time"
         rules="required"
-        hint="A partir de está hora se ejecutará en los modos Semiautomático y Automático"
+        hint="A partir de está hora se ejecutará en registro automático"
+        hint-top
       />
       <AppTextField
         label="Duración"
         name="duration"
-        :rules="{ required: true, regex: /^\d+[dhm](?:\s+\d+[dhm])*$/ }"
+        :rules="{ required: true, regex: /^\d+[hm](?:\s+\d+[hm])*$/ }"
         hint="Usa este formato: 1h 45m"
-      />
-      <AppSelect
-        :items="JIRA_QUICK_LOGGER_MODES"
-        item-value="code"
-        item-text="name"
-        label="Modo de registro"
-        name="mode"
-        rules="required"
-        :hint="loggerModeDescription"
+        hint-top
       />
       <button class="btn btn-block btn-success mt-4">
         <span>Guardar</span>

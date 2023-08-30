@@ -50,13 +50,13 @@ async function saveSettings () {
 <template>
   <AppModal v-model="settingsModal" eager>
     <template #activator="{ toggle }">
-      <button title="Ajustes" class="btn btn-sm" @click="toggle">
+      <button class="btn btn-sm btn-secondary" @click="toggle">
         <AppIcon icon="fluent:settings-28-filled" width="25" />
-        <span class="hidden md:block">Ajustes</span>
+        <span class="hidden md:block">Preferencias</span>
       </button>
     </template>
     <p class="text-lg font-bold">
-      Ajustes
+      Preferencias para JIRA
     </p>
     <AppForm ref="formRef" v-model="jiraSettings" class="grid gap-4" @on-update="saveSettings">
       <AppSelect

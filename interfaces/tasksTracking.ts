@@ -10,8 +10,8 @@ export interface QuickTimeLogger {
   duration: string
   hasTodayWorkLog?: boolean
   id?: string
-  mode: string
-  name: '' | 'PRE' | 'MAN' | 'AUT'
+  mode: 'AUT' | 'MAN'
+  name: string
   startAt: string
 }
 
@@ -20,7 +20,6 @@ export interface Task {
   description?: string
   id?: string
   isPinned?: boolean
-  name?: string
   meta?: any
   path?: string
   quickLoggers?: object

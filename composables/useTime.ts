@@ -37,10 +37,20 @@ export const useTime = () => {
     return (days * 24 * 3600) + (hours * 3600) + (minutes * 60) + seconds
   }
 
+  function secondsTextFormat (seconds: number): string {
+    let text = ''
+    const { days, hours, minutes } = duration(seconds)
+    if (days) { text += `${days}d ` }
+    if (hours) { text += `${hours}h ` }
+    if (minutes) { text += `${minutes}m` }
+    return text
+  }
+
   return {
     now: dayjs,
     duration,
     formatTime,
-    textTimeToSeconds
+    textTimeToSeconds,
+    secondsTextFormat
   }
 }

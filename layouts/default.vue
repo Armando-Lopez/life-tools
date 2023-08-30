@@ -12,7 +12,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="pb-10">
+  <div>
     <VitePwaManifest />
     <div v-if="userStore.hasLoadedAuth" class="relative min-h-screen flex flex-col">
       <TheHeader />

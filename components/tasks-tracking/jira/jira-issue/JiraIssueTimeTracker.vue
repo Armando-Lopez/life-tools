@@ -180,7 +180,7 @@ async function stopTracking () {
 </script>
 
 <template>
-  <div class="flex flex-wrap items-center justify-between gap-4">
+  <div class="flex flex-wrap justify-between gap-4">
     <button
       v-if="!isTracking"
       class="btn btn-sm px-1 shadow bg-base-100"
@@ -188,7 +188,7 @@ async function stopTracking () {
       @click="startTracking()"
     >
       <AppIcon icon="solar:play-bold" width="25" class="text-green-500" />
-      Empezar conteo
+      Inicar contador
     </button>
     <button v-else class="btn btn-sm px-1 shadow bg-base-100" @click="stopTracking()">
       <AppIcon icon="solar:stop-bold" width="25" class="text-orange-600" />

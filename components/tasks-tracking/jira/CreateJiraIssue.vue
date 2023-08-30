@@ -72,18 +72,18 @@ watch(isModalOpen, (newValue) => {
     @click="isModalOpen = true"
   >
     <AppIcon icon="mdi:pencil-plus" width="20" class="text-white" />
-    Crear tarea
+    Vincular tarea
   </button>
   <button
     class="hidden md:flex btn btn-primary"
     @click="isModalOpen = true"
   >
     <AppIcon icon="mdi:pencil-plus" width="20" />
-    Crear tarea
+    Vincular tarea
   </button>
   <AppModal v-model="isModalOpen">
     <p class="mb-5 font-semibold text-lg">
-      Crear tarea vinculada a JIRA
+      Vincular tarea a JIRA
     </p>
     <AppForm
       ref="formRef"

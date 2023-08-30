@@ -25,7 +25,7 @@ function addQuickLogger (logger: QuickTimeLogger) {
 
 async function getTodayIssueWorkLogs () {
   if (!quickLoggers?.value.length) { return }
-  const todayAtMidnightInMilliseconds = now().set('h', 0).set('m', 0).set('s', 0).valueOf()
+  const todayAtMidnightInMilliseconds = now().startOf('day').valueOf()
   const { data } = await getJiraIssueWorkLogs({
     issueCode: jiraIssue.code,
     startedAfter: todayAtMidnightInMilliseconds
@@ -48,14 +48,14 @@ async function getTodayIssueWorkLogs () {
 function handleQuickLoggerLogByMode (loggerIndex: number) {
   const logger = quickLoggers.value[loggerIndex]
   if (logger?.hasTodayWorkLog) { return }
-  loggerExecutionIntervalId = setInterval(async () => {
-    if (confirmModal.value.isOpen || isJiraIssueLoading.value) { return }
-    const hourNow = now().format('HH:mm')
-    const hasPassedLogTime = hourNow >= logger.startAt
-    if (!hasPassedLogTime) { return }
-    if (logger.mode === 'PRE') {
+  if (logger.mode === 'AUT') {
+    loggerExecutionIntervalId = setInterval(() => {
+      if (confirmModal.value.isOpen || isJiraIssueLoading.value) { return }
+      const hourNow = now().format('HH:mm')
+      const hasPassedLogTime = hourNow >= logger.startAt
+      if (!hasPassedLogTime) { return }
       confirmModal.value.isOpen = true
-      confirmModal.value.message = `¿Desea registrar ${logger.duration} en ${logger.name} hoy?`
+      confirmModal.value.message = `¿Registrar ${logger.duration} en ${jiraIssue.description} (${jiraIssue.code}) hoy?`
       // @ts-ignore
       confirmModal.value.callback = async (value: boolean) => {
         if (value) {
@@ -67,13 +67,8 @@ function handleQuickLoggerLogByMode (loggerIndex: number) {
           clearInterval(loggerExecutionIntervalId)
         }
       }
-    } else if (logger.mode === 'AUT') {
-      const success = await addJiraTodayLog(logger)
-      if (success) {
-        clearInterval(loggerExecutionIntervalId)
-      }
-    }
-  }, 2000)
+    }, 2000)
+  }
 }
 
 async function addJiraTodayLog (logger: QuickTimeLogger): Promise<Boolean> {
@@ -104,7 +99,7 @@ async function addJiraTodayLog (logger: QuickTimeLogger): Promise<Boolean> {
 }
 
 async function deleteQuickLogger (logger: QuickTimeLogger) {
-  if (confirm('No se eliminarán los registros de tiempo en JIRA. ¿Eliminar registro rápido?')) {
+  if (confirm('No se eliminarán los registros de tiempo en JIRA. ¿Eliminar registro automático?')) {
     clearInterval(loggerExecutionIntervalId)
     // @ts-ignore
     delete jiraIssue.quickLoggers[`${logger.id}`]
@@ -119,43 +114,39 @@ async function deleteQuickLogger (logger: QuickTimeLogger) {
 </script>
 
 <template>
-  <div>
-    <button v-if="!quickLoggers.length" class="btn btn-sm shadow bg-base-100" @click="createLoggerModal = true">
+  <div class="mt-2">
+    <button v-if="!quickLoggers.length" class="btn btn-sm mb-5 shadow bg-base-100" @click="createLoggerModal = true">
       <AppIcon icon="tabler:clock-plus" width="20" class="text-green-600" />
-      <span class="text-sm">Crear Registro rápido</span>
+      <span class="text-sm">Registro programado</span>
     </button>
     <div v-else>
       <ul class="divide-y divide-neutral-content/1">
-        <li v-for="logger in quickLoggers" :key="logger.id" class="flex flex-wrap items-center gap-2">
-          <span v-if="isJiraIssueLoading" class="loading loading-spinner text-green-500" />
-          <template v-else>
-            <div v-if="logger.hasTodayWorkLog" class="flex gap-2 items-center">
-              <AppIcon icon="tabler:clock-check" width="20" class="text-green-500" />
-              Día registrado
-            </div>
+        <li v-for="logger in quickLoggers" :key="logger.id">
+          <div class="flex">
+            <p class="w-full">
+              Registro programado
+            </p>
             <button
-              v-else
-              class="flex btn btn-sm p-0.5 shadow bg-base-100"
-              :disabled="isJiraIssueLoading"
-              @click="addJiraTodayLog(logger)"
+              class="btn btn-sm p-0 ml-auto shadow bg-base-100"
+              title="Eliminar registro automático"
+              :disabled="isLoadingDeleteLogger"
+              @click="deleteQuickLogger(logger)"
             >
-              <AppIcon icon="solar:play-bold" width="20" class="text-green-500" />
-              Registrar día
+              <AppIcon icon="material-symbols:delete" width="20" class="text-red-500" />
             </button>
-          </template>
-          <p>
-            <strong>{{ logger.name }}</strong>
-            -
-            De <span>{{ logger.duration }}</span> a las {{ logger.startAt }}
-          </p>
-          <button
-            class="btn btn-sm p-0 shadow"
-            title="Eliminar registro rápido"
-            :disabled="isLoadingDeleteLogger"
-            @click="deleteQuickLogger(logger)"
-          >
-            <AppIcon icon="material-symbols:delete" width="20" class="text-red-500" />
-          </button>
+          </div>
+          <div class="flex gap-2">
+            <AppIcon
+              :icon="logger.hasTodayWorkLog ? 'tabler:clock-check' : 'mdi:clock-alert-outline'"
+              width="20"
+              :class="logger.hasTodayWorkLog ? 'text-green-500' : 'text-amber-500'"
+            />
+            {{ logger.duration }} a las {{ logger.startAt }}
+            <strong v-if="logger.hasTodayWorkLog">
+              Registrado hoy
+            </strong>
+            <strong v-else>Sin registrar hoy</strong>
+          </div>
         </li>
       </ul>
     </div>

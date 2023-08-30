@@ -23,7 +23,7 @@ export const useJiraIssue = () => {
       toggleLoading()
     }
   }
-  async function getJiraIssueWorkLogs (query: { issueCode: string, startedAfter: number }) {
+  async function getJiraIssueWorkLogs (query: { issueCode: string, startedAfter: number, startedBefore: number }) {
     try {
       toggleLoading()
       const { data, error } = await useFetch(JIRA_ISSUE_WORK_LOG_URL_API, {

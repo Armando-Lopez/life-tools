@@ -3,17 +3,12 @@ export const JIRA_QUICK_LOGGER_MODES = [
   {
     code: 'MAN',
     name: 'Manual',
-    description: 'Manual: Debes dar click el botón de registrar día para realizar el registro rápido en JIRA. Sólo se registrá el día actual'
-  },
-  {
-    code: 'PRE',
-    name: 'Semiautomático',
-    description: 'Semiautomático: Al cargar la tarea, se te preguntará si quieres realizar el registro rápido en JIRA. Sólo se registrá el día actual'
+    description: 'Debes dar click en el botón de registrar día para realizar el registro automático en JIRA. Sólo se registrá el día actual'
   },
   {
     code: 'AUT',
     name: 'Automático',
-    description: 'Automático: Al cargar la tarea, se realizará automáticamente el registro rápido en JIRA. Sólo se registrará el día actual'
+    description: 'Al cargar la tarea, una ventana te reguntará si deseas realizar el registro automático en JIRA. Sólo se registrará el día actual'
   }
 ]
 

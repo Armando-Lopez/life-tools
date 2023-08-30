@@ -41,16 +41,12 @@ export default defineNuxtConfig({
     '@nuxtjs/eslint-module',
     '@nuxtjs/tailwindcss',
     '@vueuse/nuxt',
-    '@nuxtjs/i18n',
     '@nuxtjs/web-vitals',
     '@vite-pwa/nuxt'
   ],
   components: [
     '~/components/global/'
   ],
-  i18n: {
-    vueI18n: './i18n.config.ts'
-  },
   pwa: {
     mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
     manifest: {
