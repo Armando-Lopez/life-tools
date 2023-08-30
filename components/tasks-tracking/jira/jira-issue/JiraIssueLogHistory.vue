@@ -61,7 +61,7 @@ function setPrevWeek () {
   <AppAccordion @on-open="getWorkLogs">
     <template #header>
       <AppIcon icon="mdi:calendar-clock-outline" width="20" class="mr-2 text-info" />
-      Hostorial
+      Historial
     </template>
     <div class="flex justify-between items-center gap-2 mb-3">
       <div>
