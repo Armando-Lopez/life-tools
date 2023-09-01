@@ -5,7 +5,7 @@ const props = defineProps({
   persistent: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'close'])
 
 const modal = ref<HTMLDialogElement>()
 
@@ -26,6 +26,9 @@ watch(isOpen, (newValue: boolean) => {
 
 function toggle () {
   isOpen.value = !isOpen.value
+  if (!isOpen.value) {
+    emit('close')
+  }
 }
 </script>
 

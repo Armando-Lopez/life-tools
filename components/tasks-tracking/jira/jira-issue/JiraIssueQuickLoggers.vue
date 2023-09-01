@@ -30,7 +30,7 @@ async function getTodayIssueWorkLogs () {
     issueCode: jiraIssue.code,
     startedAfter: todayAtMidnightInMilliseconds
   })
-  if (!data.worklogs?.length) {
+  if (!data?.worklogs?.length) {
     handleQuickLoggerLogByMode(0)
     return
   }
@@ -90,7 +90,7 @@ async function addJiraTodayLog (logger: QuickTimeLogger): Promise<Boolean> {
     return true
   } else {
     emit('toast:open', {
-      type: 'SUCCESS',
+      type: 'ERROR',
       title: logger.name,
       message: 'No se puso registrar el tiempo en JIRA'
     })

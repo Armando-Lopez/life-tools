@@ -5,9 +5,12 @@ import JiraIssueQuickLoggers from '~/components/tasks-tracking/jira/jira-issue/J
 import JiraIssueDetails from '~/components/tasks-tracking/jira/jira-issue/JiraIssueDetails.vue'
 import JiraIssueSettings from '~/components/tasks-tracking/jira/jira-issue/JiraIssueSettings.vue'
 import JiraIssueLogHistory from '~/components/tasks-tracking/jira/jira-issue/JiraIssueLogHistory.vue'
+import JiraIssueCreateLog from '~/components/tasks-tracking/jira/jira-issue/JiraIssueCreateLog.vue'
 
 const props = defineProps<{ issue: Task }>()
 const emit = defineEmits(['onTogglePin', 'onDeleted'])
+
+const createLogModal = ref(false)
 
 provide('jiraIssue', props.issue)
 </script>
@@ -32,6 +35,13 @@ provide('jiraIssue', props.issue)
     </p>
     <div class="divider my-0" />
     <JiraIssueTimeTracker />
+    <div>
+      <button class="btn btn-sm shadow bg-base-100" @click="createLogModal = true">
+        <AppIcon icon="tabler:clock-edit" width="20" class="text-green-600" />
+        <span class="text-sm">Registro rápido</span>
+      </button>
+      <JiraIssueCreateLog v-if="createLogModal" @onClose="createLogModal = false" />
+    </div>
     <JiraIssueQuickLoggers />
     <div class="divider my-0" />
     <JiraIssueLogHistory :jira-issue="props.issue" />
