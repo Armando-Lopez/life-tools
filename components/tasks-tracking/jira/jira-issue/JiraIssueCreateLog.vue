@@ -29,7 +29,7 @@ async function addLog () {
     eventEmit('toast:open', {
       type: 'ERROR',
       title: jiraIssue.code,
-      message: 'No se puso registrar el tiempo en JIRA'
+      message: 'Tiempo registrado en JIRA'
     })
   } else {
     emit('onClose')
