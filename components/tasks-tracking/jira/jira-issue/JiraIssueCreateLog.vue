@@ -29,15 +29,15 @@ async function addLog () {
     eventEmit('toast:open', {
       type: 'ERROR',
       title: jiraIssue.code,
-      message: 'Tiempo registrado en JIRA'
+      message: 'No se puso registrar el tiempo en JIRA'
     })
   } else {
-    emit('onClose')
     eventEmit('toast:open', {
       type: 'SUCCESS',
       title: jiraIssue.code,
-      message: 'No se puso registrar el tiempo en JIRA'
+      message: 'Tiempo registrado en JIRA'
     })
+    emit('onClose')
   }
 }
 </script>

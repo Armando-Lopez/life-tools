@@ -115,7 +115,7 @@ async function deleteQuickLogger (logger: QuickTimeLogger) {
 
 <template>
   <div class="mt-2">
-    <button v-if="!quickLoggers.length" class="btn btn-sm mb-5 shadow bg-base-100" @click="createLoggerModal = true">
+    <button v-if="!quickLoggers.length" class="btn btn-sm mb-5 px-1 shadow bg-base-100" @click="createLoggerModal = true">
       <AppIcon icon="tabler:clock-plus" width="20" class="text-green-600" />
       <span class="text-sm">Registro programado</span>
     </button>

@@ -36,7 +36,7 @@ provide('jiraIssue', props.issue)
     <div class="divider my-0" />
     <JiraIssueTimeTracker />
     <div>
-      <button class="btn btn-sm shadow bg-base-100" @click="createLogModal = true">
+      <button class="btn btn-sm px-1 shadow bg-base-100" @click="createLogModal = true">
         <AppIcon icon="tabler:clock-edit" width="20" class="text-green-600" />
         <span class="text-sm">Registro rápido</span>
       </button>
